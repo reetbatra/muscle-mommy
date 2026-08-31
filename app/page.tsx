@@ -14,22 +14,22 @@ const PILLARS = [
   {
     icon: Dumbbell,
     title: "It tells you what to lift",
-    body: "Log a set and the next session already knows the answer. 30kg for ten and twelve last week means eleven and twelve this week, and when every set clears the top of your range it puts the weight up for you.",
+    body: "Log a set. Next session already knows the answer, and puts the weight up when you have earned it.",
   },
   {
     icon: Camera,
     title: "Photograph the plate, not the label",
-    body: "Take a picture of what you ate. You get calories, protein, carbs, fat and fibre, with the portion it assumed written down so you can correct it in two taps.",
+    body: "Photograph it, or just type \u201c200g paneer\u201d. It remembers your portions.",
   },
   {
     icon: Footprints,
     title: "Steps and cycle come from Apple Health",
-    body: "One Shortcut on your phone pushes steps, weight, sleep and energy burned every morning. No third-party app, no subscription, no opening anything.",
+    body: "One Shortcut pushes steps, weight and energy every morning. Nothing to open.",
   },
   {
     icon: BookOpen,
     title: "The small things count too",
-    body: "Supplements, protein, fibre, water, teeth, moisturiser, skincare, ten pages. Tap them off. They keep a streak.",
+    body: "Supplements, protein, fibre, water, teeth, skincare, ten pages. Tap them off.",
   },
 ];
 
@@ -40,12 +40,9 @@ export default function LandingPage() {
         <div className="glitter-fill shimmer mx-auto flex size-16 items-center justify-center rounded-3xl shadow-[0_10px_30px_-12px_rgb(219_39_119/0.6)]">
           <Dumbbell className="size-8 text-white" aria-hidden />
         </div>
-        <h1 className="font-display mt-6 text-[42px] leading-[1.05] font-bold tracking-tight">
-          <span className="glitter-text">Muscle Mommy</span>
-        </h1>
-        <p className="mx-auto mt-4 max-w-[30ch] text-lg leading-relaxed text-ink-soft">
-          Your lifts, your macros, your steps and the little habits. One app, and it actually
-          remembers what you did last week.
+        <p className="hand mt-7 text-[38px] leading-none">Muscle Mommy</p>
+        <p className="mx-auto mt-5 max-w-[26ch] text-[19px] leading-relaxed text-ink-soft">
+          Lifts, macros, steps, habits. It remembers what you did last week.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3">
           <Link
@@ -83,10 +80,9 @@ export default function LandingPage() {
         <h2 id="overload-heading" className="font-display mt-3 text-xl font-semibold text-ink">
           Progressive overload, written down
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          Getting stronger means doing slightly more than last time, every time. That is easy to
-          say and impossible to hold in your head across four training days and twenty exercises.
-          So the app holds it instead.
+        <p className="mt-2 text-[16px] leading-relaxed text-ink-soft">
+          Slightly more than last time, every time. Impossible to hold in your head across four
+          days and twenty lifts. So the app holds it.
         </p>
         <div className="mt-5 rounded-2xl border border-line bg-surface-2 p-4">
           <p className="text-xs font-semibold tracking-wide text-ink-faint uppercase">
@@ -99,8 +95,8 @@ export default function LandingPage() {
           <p className="tnum font-display mt-1 text-lg font-semibold text-ink">
             30kg for 11, 12, 11
           </p>
-          <p className="mt-2 text-sm text-ink-soft">
-            Two sets need one more rep. Get all three to twelve and the app moves you to 35kg.
+          <p className="mt-2 text-[15px] text-ink-soft">
+            Two sets need a rep. All three at twelve and it moves you to 35kg.
           </p>
         </div>
       </section>
@@ -112,8 +108,8 @@ export default function LandingPage() {
         >
           Get started
         </Link>
-        <p className="mt-6 text-xs leading-relaxed text-ink-faint">
-          Add it to your home screen from Safari and it behaves like any other app on your phone.
+        <p className="mt-6 text-[13px] text-ink-faint">
+          Add to your home screen from Safari.
         </p>
       </section>
     </main>
