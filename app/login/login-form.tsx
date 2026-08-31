@@ -4,12 +4,16 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { SessionFromHash } from "./session-from-hash";
 import { Button } from "@/components/ui/button";
 import { FieldRow, Input } from "@/components/ui/field";
 
 export function LoginForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/today";
+  // A failed callback lands back here with a reason. Show it rather than
+  // leaving the user staring at an unchanged form.
+  const callbackError = searchParams.get("error");
 
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -38,6 +42,7 @@ export function LoginForm() {
   if (status === "sent") {
     return (
       <div className="flex flex-col items-center gap-3 py-4 text-center">
+        <SessionFromHash />
         <div className="flex size-12 items-center justify-center rounded-2xl bg-surface-2 text-[var(--mint)]">
           <CheckCircle2 className="size-6" aria-hidden />
         </div>
@@ -54,6 +59,17 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
+      <SessionFromHash />
+
+      {callbackError && callbackError !== "missing_code" ? (
+        <p
+          role="alert"
+          className="rounded-2xl border border-[var(--coral)] bg-surface-2 px-4 py-3 text-sm font-medium text-ink"
+        >
+          {decodeURIComponent(callbackError)}
+        </p>
+      ) : null}
+
       <FieldRow label="Email" htmlFor="email">
         <Input
           id="email"

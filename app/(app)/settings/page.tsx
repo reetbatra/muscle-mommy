@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
+  Activity,
   Dumbbell,
   HeartPulse,
   ListChecks,
@@ -19,6 +20,9 @@ import { GoalsForm } from "@/components/settings/goals-form";
 import { GymForm } from "@/components/settings/gym-form";
 import { HealthSync } from "@/components/settings/health-sync";
 import { HabitsManager } from "@/components/settings/habits-manager";
+import { HevySync } from "@/components/settings/hevy-sync";
+import { getHevyStatus } from "@/lib/actions/hevy";
+import type { Exercise } from "@/lib/domain/types";
 import type { Habit, IngestToken } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +33,7 @@ export default async function SettingsPage() {
   const ctx = await getSessionContext();
   const { supabase, user } = await requireUser();
 
-  const [{ data: habits }, { data: tokens }] = await Promise.all([
+  const [{ data: habits }, { data: tokens }, hevy, { data: library }] = await Promise.all([
     supabase
       .from("habits")
       .select("*")
@@ -41,6 +45,12 @@ export default async function SettingsPage() {
       .select("id, token_prefix, label, created_at, last_used_at, revoked_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
+    getHevyStatus(),
+    supabase
+      .from("exercises")
+      .select("id, user_id, name, muscle_group, equipment")
+      .or(`user_id.is.null,user_id.eq.${user.id}`)
+      .order("name"),
   ]);
 
   const activeTokens = ((tokens ?? []) as IngestToken[]).filter((t) => !t.revoked_at);
@@ -61,6 +71,18 @@ export default async function SettingsPage() {
           defaultOpen={activeTokens.length === 0}
         >
           <HealthSync tokens={(tokens ?? []) as IngestToken[]} siteUrl={env.siteUrl} />
+        </SettingsSection>
+
+        <SettingsSection
+          icon={Activity}
+          title="Hevy"
+          summary={
+            hevy.connected
+              ? `Connected · ${hevy.workoutsImported} workouts imported`
+              : "Import your sets automatically"
+          }
+        >
+          <HevySync status={hevy} library={(library ?? []) as Exercise[]} />
         </SettingsSection>
 
         <SettingsSection

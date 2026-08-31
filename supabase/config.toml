@@ -1,0 +1,32 @@
+project_id = "ubjpipknpdzgzgoopxqi"
+
+[auth]
+enabled = true
+# Fallback destination for a magic link. The app always sends an explicit
+# emailRedirectTo of the origin it was opened from, so this only matters when
+# that is missing. It stays on the Vercel URL until the custom domain's DNS
+# resolves, so sign-in never lands on a dead host.
+site_url = "https://muscle-mommy.vercel.app"
+additional_redirect_urls = [
+  "https://musclemommy.reetbatra.com/auth/callback",
+  "https://muscle-mommy.vercel.app/auth/callback",
+  "https://*-reetbatras-projects.vercel.app/auth/callback",
+  "http://localhost:3000/auth/callback",
+]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+enable_anonymous_sign_ins = false
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+# Magic links only. There is no password anywhere in this app.
+secure_password_change = false
+otp_expiry = 3600
+otp_length = 8
+# One sign-in email per minute is plenty and stops the endpoint being a
+# free email cannon.
+max_frequency = "60s"

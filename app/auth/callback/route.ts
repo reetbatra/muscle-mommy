@@ -9,6 +9,16 @@ export async function GET(request: Request) {
   // Never redirect somewhere off-site on the strength of a query parameter.
   const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/today";
 
+  // Supabase reports its own failures here before any code is issued.
+  const providerError = url.searchParams.get("error_description") ?? url.searchParams.get("error");
+  if (providerError) {
+    return NextResponse.redirect(
+      new URL(`/login?error=${encodeURIComponent(providerError)}`, url.origin),
+    );
+  }
+
+  // No code usually means the session came back in the URL fragment instead,
+  // which only the browser can see. The login page picks that up.
   if (!code) {
     return NextResponse.redirect(new URL("/login?error=missing_code", url.origin));
   }

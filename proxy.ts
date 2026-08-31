@@ -2,7 +2,20 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { env } from "@/lib/env";
 
-const PUBLIC_PATHS = ["/", "/login", "/auth", "/api/health", "/manifest.webmanifest"];
+const PUBLIC_PATHS = [
+  "/",
+  "/login",
+  "/auth",
+  "/api/health",
+  // The service worker serves this when the network is gone, and it has to
+  // render whether or not there is a session.
+  "/offline",
+  // Generated icons and the manifest are fetched by the OS, not the browser,
+  // and never carry a cookie.
+  "/manifest.webmanifest",
+  "/apple-icon",
+  "/icon",
+];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
