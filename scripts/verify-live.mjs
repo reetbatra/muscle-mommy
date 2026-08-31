@@ -11,6 +11,13 @@ const admin = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_RO
   auth: { persistSession: false },
 });
 
+// A route that answers with HTML has been swallowed by the proxy, which is a
+// failure in itself.
+const asJson = async (res) => {
+  const body = await res.text();
+  try { return JSON.parse(body); } catch { return { notJson: body.slice(0, 60) }; }
+};
+
 const email = `verify-${Date.now()}@musclemommy.test`;
 let pass = 0, fail = 0;
 const check = (name, ok, extra = "") => {
@@ -84,7 +91,7 @@ const good = await fetch(`${base}/api/health/ingest`, {
   headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
   body: JSON.stringify({ date: today, steps: "8421", active_kcal: 412, basal_kcal: 1380, weight_kg: 61.2, sleep_minutes: 431, flow: "medium" }),
 });
-const goodBody = await good.json();
+const goodBody = await asJson(good);
 check("accepts a valid push", good.status === 200, JSON.stringify(goodBody));
 
 const { data: healthRow } = await admin.from("health_days").select("*").eq("user_id", uid).eq("log_date", today).maybeSingle();
@@ -106,6 +113,29 @@ const bad = await fetch(`${base}/api/health/ingest`, {
   body: JSON.stringify({ date: "not-a-date" }),
 });
 check("rejects a malformed date", bad.status === 422, `got ${bad.status}`);
+
+console.log("\n--- hevy endpoints ---");
+const hevyNoSession = await fetch(`${base}/api/hevy/sync`, { method: "POST" });
+check("sync refuses a request with no session", hevyNoSession.status === 401, `got ${hevyNoSession.status}`);
+
+const cronNoSecret = await fetch(`${base}/api/hevy/sync`);
+check("cron refuses a request with no secret", cronNoSecret.status === 401, `got ${cronNoSecret.status}`);
+
+const cronBadSecret = await fetch(`${base}/api/hevy/sync`, { headers: { Authorization: "Bearer nope" } });
+check("cron refuses a wrong secret", cronBadSecret.status === 401, `got ${cronBadSecret.status}`);
+
+if (env.CRON_SECRET) {
+  const cronGood = await fetch(`${base}/api/hevy/sync`, {
+    headers: { Authorization: `Bearer ${env.CRON_SECRET}` },
+  });
+  const cronBody = await asJson(cronGood);
+  check("cron runs with the right secret", cronGood.status === 200, JSON.stringify(cronBody).slice(0, 90));
+}
+
+for (const table of ["hevy_connections", "hevy_workout_links", "hevy_exercise_map"]) {
+  const { data: rows, error: readError } = await anon.from(table).select("*").limit(1);
+  check(`anon cannot read ${table}`, (rows ?? []).length === 0, readError?.message ?? "empty");
+}
 
 console.log("\n--- public pages ---");
 for (const [path, expect] of [["/", 200], ["/login", 200], ["/manifest.webmanifest", 200], ["/icons/192", 200], ["/apple-icon", 200], ["/offline", 200]]) {

@@ -4,9 +4,8 @@ project_id = "ubjpipknpdzgzgoopxqi"
 enabled = true
 # Fallback destination for a magic link. The app always sends an explicit
 # emailRedirectTo of the origin it was opened from, so this only matters when
-# that is missing. It stays on the Vercel URL until the custom domain's DNS
-# resolves, so sign-in never lands on a dead host.
-site_url = "https://muscle-mommy.vercel.app"
+# that is missing.
+site_url = "https://musclemommy.reetbatra.com"
 additional_redirect_urls = [
   "https://musclemommy.reetbatra.com/auth/callback",
   "https://muscle-mommy.vercel.app/auth/callback",

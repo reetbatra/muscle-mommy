@@ -6,7 +6,10 @@ const PUBLIC_PATHS = [
   "/",
   "/login",
   "/auth",
-  "/api/health",
+  // Every API route authenticates itself: the health and Hevy cron endpoints
+  // on a bearer token, the rest on a Supabase session. Redirecting them to a
+  // sign-in page would hand a cron job an HTML login form.
+  "/api",
   // The service worker serves this when the network is gone, and it has to
   // render whether or not there is a session.
   "/offline",
