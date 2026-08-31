@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { requireUser } from "@/lib/supabase/server";
 import { safeTimezone, todayISO } from "@/lib/domain/dates";
 import type {
@@ -29,18 +30,26 @@ export type SessionContext = {
   loadConfig: LoadConfig;
 };
 
-/** Profile, goals, and the user's own idea of what day it is. */
-export async function getSessionContext(): Promise<SessionContext> {
+/**
+ * Profile, goals, and the user's own idea of what day it is.
+ *
+ * One round trip, not two: goals are embedded in the profile row. Cached per
+ * request because several loaders on the same page want it.
+ */
+export const getSessionContext = cache(async (): Promise<SessionContext> => {
   const { supabase, user } = await requireUser();
 
-  const [{ data: profile, error: profileError }, { data: goals, error: goalsError }] =
-    await Promise.all([
-      supabase.from("profiles").select("*").eq("id", user.id).single(),
-      supabase.from("goals").select("*").eq("user_id", user.id).single(),
-    ]);
+  const { data: row, error } = await supabase
+    .from("profiles")
+    .select("*, goals(*)")
+    .eq("id", user.id)
+    .single();
 
-  if (profileError) throw new Error(`Could not load profile: ${profileError.message}`);
-  if (goalsError) throw new Error(`Could not load goals: ${goalsError.message}`);
+  if (error) throw new Error(`Could not load your profile: ${error.message}`);
+
+  const { goals: embedded, ...profile } = row as typeof row & { goals: Goals | Goals[] | null };
+  const goals = (Array.isArray(embedded) ? embedded[0] : embedded) as Goals | undefined;
+  if (!goals) throw new Error("Could not load your targets.");
 
   const timezone = safeTimezone(profile.timezone);
 
@@ -56,7 +65,7 @@ export async function getSessionContext(): Promise<SessionContext> {
       barbellIncrementKg: Number(profile.barbell_increment_kg),
     },
   };
-}
+});
 
 export type RoutineExerciseFull = RoutineExercise & {
   display_name: string | null;
@@ -72,7 +81,7 @@ export type RoutineDayFull = RoutineDay & {
   routine_exercises: RoutineExerciseFull[];
 };
 
-export async function getRoutine(): Promise<RoutineDayFull[]> {
+export const getRoutine = cache(async (): Promise<RoutineDayFull[]> => {
   const { supabase, user } = await requireUser();
   const { data, error } = await supabase
     .from("routine_days")
@@ -91,7 +100,7 @@ export async function getRoutine(): Promise<RoutineDayFull[]> {
       (a, b) => a.position - b.position,
     ),
   })) as RoutineDayFull[];
-}
+});
 
 /**
  * The most recent finished session's working sets for each exercise.

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { env } from "@/lib/env";
@@ -24,8 +25,15 @@ export async function createClient() {
   });
 }
 
-/** Throws instead of returning null, so pages never render half-signed-in. */
-export async function requireUser() {
+/**
+ * Throws instead of returning null, so pages never render half-signed-in.
+ *
+ * Wrapped in React's per-request cache because a single page calls this from
+ * three or four different loaders, and getUser() is a network round trip to
+ * Supabase every time. Without the cache, rendering Today cost four auth calls
+ * to Mumbai before a single row of real data was fetched.
+ */
+export const requireUser = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -33,4 +41,4 @@ export async function requireUser() {
   } = await supabase.auth.getUser();
   if (error || !user) throw new Error("NOT_AUTHENTICATED");
   return { supabase, user };
-}
+});

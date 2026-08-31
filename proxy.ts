@@ -67,7 +67,10 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Everything except static assets, images, and the service worker.
-    "/((?!_next/static|_next/image|favicon.ico|icons/|sw.js|.*\\.(?:png|jpg|jpeg|svg|webp|ico|webmanifest)$).*)",
+    // Everything except static assets, generated icons, the manifest and the
+    // service worker. Each request that reaches here costs a round trip to
+    // Supabase to validate the session, so the exclusion list is worth keeping
+    // tight.
+    "/((?!_next/static|_next/image|favicon.ico|icons/|icon|apple-icon|manifest.webmanifest|sw\\.js|offline|.*\\.(?:png|jpg|jpeg|svg|webp|ico|webmanifest)$).*)",
   ],
 };
