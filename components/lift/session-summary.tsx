@@ -53,7 +53,7 @@ export function SessionSummary({
       </header>
 
       <section className="card p-5" aria-labelledby="overload-score">
-        <div className="flex items-center gap-2 text-[var(--pink-deep)]">
+        <div className="flex items-center gap-2 text-[var(--accent)]">
           <TrendingUp className="size-4" aria-hidden />
           <h2 id="overload-score" className="text-xs font-bold tracking-[0.14em] uppercase">
             Overload

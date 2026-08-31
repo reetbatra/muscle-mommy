@@ -7,17 +7,17 @@ const STATUS = {
   "add-weight": {
     icon: ArrowUp,
     label: "Weight up",
-    className: "bg-[var(--mint)] text-white",
+    className: "bg-[var(--good)] text-white",
   },
   "extend-reps": {
     icon: TrendingUp,
     label: "Reps up",
-    className: "bg-[var(--lilac-deep)] text-white",
+    className: "bg-[var(--accent-soft)] text-white",
   },
   "add-reps": {
     icon: Check,
     label: "Beat it",
-    className: "bg-surface-3 text-[var(--pink-deep)]",
+    className: "bg-surface-3 text-[var(--accent)]",
   },
   first: {
     icon: TrendingUp,

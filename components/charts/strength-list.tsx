@@ -65,9 +65,9 @@ export function StrengthList({ exercises }: { exercises: ExerciseTrend[] }) {
                 className={cn(
                   "flex w-14 shrink-0 items-center justify-end gap-0.5 text-xs font-bold",
                   delta === null && "text-ink-faint",
-                  delta !== null && delta > 0 && "text-[var(--mint)]",
+                  delta !== null && delta > 0 && "text-[var(--good)]",
                   delta !== null && delta === 0 && "text-ink-faint",
-                  delta !== null && delta < 0 && "text-[var(--coral)]",
+                  delta !== null && delta < 0 && "text-[var(--bad)]",
                 )}
               >
                 {delta === null ? (

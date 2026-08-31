@@ -100,7 +100,7 @@ export function HealthSync({
                   })
                 }
                 aria-label={`Revoke ${token.label}`}
-                className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink-faint transition-colors duration-150 hover:bg-surface-2 hover:text-[var(--coral)]"
+                className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink-faint transition-colors duration-150 hover:bg-surface-2 hover:text-[var(--bad)]"
               >
                 <Trash2 className="size-4" aria-hidden />
               </button>
@@ -113,7 +113,7 @@ export function HealthSync({
 
       {freshToken ? (
         <div className="rounded-2xl border-2 border-[var(--ring)] bg-surface-2 p-4">
-          <p className="flex items-center gap-1.5 text-xs font-bold text-[var(--pink-deep)]">
+          <p className="flex items-center gap-1.5 text-xs font-bold text-[var(--accent)]">
             <TriangleAlert className="size-3.5" aria-hidden />
             Copy this now. It is not shown again.
           </p>
@@ -261,7 +261,7 @@ function format(value: number | null, unit?: string) {
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span className="tnum flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--pink-deep)] text-xs font-bold text-white">
+      <span className="tnum flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-xs font-bold text-white">
         {n}
       </span>
       <span className="min-w-0 flex-1">{children}</span>

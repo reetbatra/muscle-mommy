@@ -6,9 +6,9 @@ import type { EnergyBalance, MacroLine } from "@/lib/domain/macros";
 import { cn } from "@/lib/utils";
 
 const VERDICT_STYLE = {
-  deficit: { icon: TrendingDown, color: "var(--mint)", chip: "On track" },
-  maintenance: { icon: Minus, color: "var(--gold)", chip: "Level" },
-  surplus: { icon: TrendingUp, color: "var(--coral)", chip: "Over" },
+  deficit: { icon: TrendingDown, color: "var(--good)", chip: "On track" },
+  maintenance: { icon: Minus, color: "var(--warn)", chip: "Level" },
+  surplus: { icon: TrendingUp, color: "var(--bad)", chip: "Over" },
   pending: { icon: Flame, color: "var(--ink-faint)", chip: "Waiting" },
 } as const;
 
@@ -46,7 +46,7 @@ export function EnergyCard({
           size={104}
           thickness={10}
           label="Calories against target"
-          color="var(--pink-deep)"
+          color="var(--accent)"
         >
           <span className="tnum font-display text-2xl leading-none font-bold text-ink">
             {Math.round(balance.consumed)}
@@ -81,8 +81,8 @@ export function EnergyCard({
                 <span
                   className={cn(
                     "font-bold",
-                    macro.status === "hit" && "text-[var(--mint)]",
-                    macro.status === "over" && "text-[var(--coral)]",
+                    macro.status === "hit" && "text-[var(--good)]",
+                    macro.status === "over" && "text-[var(--bad)]",
                   )}
                 >
                   {macro.value}

@@ -55,10 +55,10 @@ const MACRO_META: Record<
   Exclude<MacroKey, "kcal">,
   { label: string; unit: string; kind: "floor" | "ceiling"; colorVar: string }
 > = {
-  protein_g: { label: "Protein", unit: "g", kind: "floor", colorVar: "var(--pink-deep)" },
-  carbs_g: { label: "Carbs", unit: "g", kind: "ceiling", colorVar: "var(--lilac-deep)" },
-  fat_g: { label: "Fat", unit: "g", kind: "ceiling", colorVar: "var(--gold)" },
-  fiber_g: { label: "Fibre", unit: "g", kind: "floor", colorVar: "var(--mint)" },
+  protein_g: { label: "Protein", unit: "g", kind: "floor", colorVar: "var(--accent)" },
+  carbs_g: { label: "Carbs", unit: "g", kind: "ceiling", colorVar: "var(--accent-soft)" },
+  fat_g: { label: "Fat", unit: "g", kind: "ceiling", colorVar: "var(--warn)" },
+  fiber_g: { label: "Fibre", unit: "g", kind: "floor", colorVar: "var(--good)" },
 };
 
 export function macroLines(totals: MacroTotals, targets: MacroTargets): MacroLine[] {

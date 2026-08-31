@@ -59,7 +59,7 @@ export function CycleChip({
         className="flex cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-bold text-ink-soft transition-colors duration-200 hover:border-line-strong hover:text-ink"
       >
         <Droplet
-          className={cn("size-3.5", phase === "period" ? "text-[var(--coral)]" : "text-[var(--lilac-deep)]")}
+          className={cn("size-3.5", phase === "period" ? "text-[var(--bad)]" : "text-[var(--accent-soft)]")}
           aria-hidden
         />
         {cycleDay ? `Day ${cycleDay} · ${copy.label}` : "Log cycle"}
@@ -83,7 +83,7 @@ export function CycleChip({
                 className={cn(
                   "min-h-11 cursor-pointer rounded-full border px-4 text-sm font-semibold transition-colors duration-200",
                   flow === option.value
-                    ? "border-transparent bg-[var(--coral)] text-white"
+                    ? "border-transparent bg-[var(--bad)] text-white"
                     : "border-line bg-surface text-ink-soft hover:text-ink",
                 )}
               >
@@ -113,7 +113,7 @@ export function CycleChip({
                   className={cn(
                     "min-h-11 cursor-pointer rounded-full border px-4 text-sm font-semibold transition-colors duration-200",
                     active
-                      ? "border-transparent bg-[var(--lilac-deep)] text-white"
+                      ? "border-transparent bg-[var(--accent-soft)] text-white"
                       : "border-line bg-surface text-ink-soft hover:text-ink",
                   )}
                 >

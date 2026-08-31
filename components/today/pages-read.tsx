@@ -34,7 +34,7 @@ export function PagesRead({
     <section className="card p-5" aria-labelledby="pages-heading">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-[2px] bg-surface-2 text-[var(--pink-deep)]">
+          <div className="flex size-10 items-center justify-center rounded-[2px] bg-surface-2 text-[var(--accent)]">
             <BookOpen className="size-5" aria-hidden />
           </div>
           <div>
@@ -60,7 +60,7 @@ export function PagesRead({
       <ProgressBar
         value={pages}
         max={target}
-        color="var(--cyan)"
+        color="var(--accent-soft)"
         label={`Pages read: ${pages} of ${target}`}
         className="mt-4"
       />

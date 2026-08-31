@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 export function ProgressBar({
   value,
   max,
-  color = "var(--pink-deep)",
+  color = "var(--accent)",
   label,
   className,
   height = 8,
@@ -31,7 +31,7 @@ export function ProgressBar({
     >
       <div
         className="h-full rounded-full transition-[width] duration-700 ease-out"
-        style={{ width: `${pct}%`, background: over ? "var(--coral)" : color }}
+        style={{ width: `${pct}%`, background: over ? "var(--bad)" : color }}
       />
     </div>
   );

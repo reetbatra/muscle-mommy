@@ -68,7 +68,7 @@ export function GymForm({ profile }: { profile: GymProfile }) {
                 type="button"
                 onClick={() => setRack((r) => r.filter((w) => w !== weight))}
                 aria-label={`Remove ${trimNumber(weight)}kg from the rack`}
-                className="tnum flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm font-bold text-ink transition-colors duration-150 hover:border-[var(--coral)] hover:text-[var(--coral)]"
+                className="tnum flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm font-bold text-ink transition-colors duration-150 hover:border-[var(--bad)] hover:text-[var(--bad)]"
               >
                 {trimNumber(weight)}kg
                 <X className="size-3.5" aria-hidden />

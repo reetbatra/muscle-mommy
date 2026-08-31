@@ -32,7 +32,7 @@ export function AppNav() {
                 className={cn(
                   "flex min-h-[56px] cursor-pointer flex-col items-center justify-center gap-1 px-1 py-2",
                   "transition-colors duration-200",
-                  active ? "text-[var(--pink-deep)]" : "text-ink-faint hover:text-ink-soft",
+                  active ? "text-[var(--accent)]" : "text-ink-faint hover:text-ink-soft",
                 )}
               >
                 <span

@@ -67,16 +67,11 @@
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
 
-  /* The old pink names still resolve, so every existing class keeps working
-     and now points at the bronze. */
-  --color-pink: var(--accent);
-  --color-pink-deep: var(--accent);
-  --color-lilac: var(--accent-soft);
-  --color-lilac-deep: var(--accent-soft);
-  --color-cyan: var(--accent-soft);
-  --color-mint: var(--good);
-  --color-gold: var(--warn);
-  --color-coral: var(--bad);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
 
   --font-display: var(--font-garamond), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;

@@ -164,7 +164,7 @@ export default async function SettingsPage() {
 
         <section className="card p-5">
           <div className="flex items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[var(--pink-deep)]">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[var(--accent)]">
               <Share className="size-5" aria-hidden />
             </span>
             <div>
@@ -197,7 +197,7 @@ export default async function SettingsPage() {
             when the browser clears its storage.
           </p>
           <form action={signOut} className="mt-4">
-            <Button type="submit" variant="ghost" size="md" block className="text-[var(--coral)]">
+            <Button type="submit" variant="ghost" size="md" block className="text-[var(--bad)]">
               <LogOut className="size-4" aria-hidden />
               Sign out on this device
             </Button>

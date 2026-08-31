@@ -34,7 +34,7 @@ export function HabitsManager({ habits }: { habits: Habit[] }) {
           const Icon = habitIcon(habit.icon);
           return (
             <li key={habit.id} className="flex items-center gap-3 py-2.5">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[var(--pink-deep)]">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[var(--accent)]">
                 <Icon className="size-4" aria-hidden />
               </span>
               <span className="min-w-0 flex-1">
@@ -128,8 +128,8 @@ function ArchiveButton({ habit, onDone }: { habit: Habit; onDone: () => void }) 
       className={cn(
         "flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-150",
         confirming
-          ? "bg-[var(--coral)] text-white"
-          : "text-ink-faint hover:bg-surface-2 hover:text-[var(--coral)]",
+          ? "bg-[var(--bad)] text-white"
+          : "text-ink-faint hover:bg-surface-2 hover:text-[var(--bad)]",
       )}
     >
       <Trash2 className="size-4" aria-hidden />
@@ -222,7 +222,7 @@ function HabitSheet({
                   className={cn(
                     "flex size-11 cursor-pointer items-center justify-center rounded-xl border transition-colors duration-150",
                     active
-                      ? "border-transparent bg-[var(--pink-deep)] text-white"
+                      ? "border-transparent bg-[var(--accent)] text-white"
                       : "border-line bg-surface text-ink-soft hover:text-ink",
                   )}
                 >

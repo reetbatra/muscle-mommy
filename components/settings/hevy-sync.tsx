@@ -55,14 +55,14 @@ export function HevySync({
 
         <ol className="space-y-2 text-sm text-ink-soft">
           <li className="flex gap-2.5">
-            <span className="font-bold text-[var(--pink-deep)]">1.</span>
+            <span className="font-bold text-[var(--accent)]">1.</span>
             <span>
               Open{" "}
               <a
                 href="https://hevy.com/settings?developer"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-0.5 font-semibold text-[var(--pink-deep)] underline"
+                className="inline-flex items-center gap-0.5 font-semibold text-[var(--accent)] underline"
               >
                 hevy.com/settings?developer
                 <ExternalLink className="size-3" aria-hidden />
@@ -71,7 +71,7 @@ export function HevySync({
             </span>
           </li>
           <li className="flex gap-2.5">
-            <span className="font-bold text-[var(--pink-deep)]">2.</span>
+            <span className="font-bold text-[var(--accent)]">2.</span>
             <span>Paste it below. It is stored server side and never sent back to your browser.</span>
           </li>
         </ol>
@@ -107,8 +107,8 @@ export function HevySync({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-3 rounded-2xl border border-[var(--mint)] bg-surface-2 p-3">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--mint)] text-white">
+      <div className="flex items-center gap-3 rounded-2xl border border-[var(--good)] bg-surface-2 p-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--good)] text-white">
           <Check className="size-4" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
@@ -125,8 +125,8 @@ export function HevySync({
       </div>
 
       {status.lastError ? (
-        <p className="flex items-start gap-2 rounded-2xl border border-[var(--coral)] bg-surface-2 p-3 text-sm text-ink">
-          <TriangleAlert className="mt-0.5 size-4 shrink-0 text-[var(--coral)]" aria-hidden />
+        <p className="flex items-start gap-2 rounded-2xl border border-[var(--bad)] bg-surface-2 p-3 text-sm text-ink">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0 text-[var(--bad)]" aria-hidden />
           {status.lastError}
         </p>
       ) : null}
@@ -135,7 +135,7 @@ export function HevySync({
         <input
           type="checkbox"
           checked={status.autoSync}
-          className="size-5 accent-[var(--pink-deep)]"
+          className="size-5 accent-[var(--accent)]"
           onChange={(e) =>
             startTransition(async () => {
               try {
@@ -183,7 +183,7 @@ export function HevySync({
         <Button
           variant="ghost"
           size="md"
-          className="text-[var(--coral)]"
+          className="text-[var(--bad)]"
           onClick={() =>
             startTransition(async () => {
               try {

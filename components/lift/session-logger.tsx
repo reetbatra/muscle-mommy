@@ -129,7 +129,7 @@ export function SessionLogger({
               className={cn(
                 "min-h-11 flex-1 cursor-pointer rounded-full border px-3 text-sm font-semibold transition-colors duration-200",
                 feel === option.value
-                  ? "border-transparent bg-[var(--pink-deep)] text-white"
+                  ? "border-transparent bg-[var(--accent)] text-white"
                   : "border-line bg-surface text-ink-soft hover:text-ink",
               )}
             >
@@ -155,7 +155,7 @@ export function SessionLogger({
           variant="ghost"
           size="sm"
           block
-          className="mt-2 text-[var(--coral)]"
+          className="mt-2 text-[var(--bad)]"
           onClick={() => {
             if (totalLogged > 0) {
               toast.error("There are logged sets here. Delete them first if you really want this gone.");
@@ -225,7 +225,7 @@ function ExerciseCard({
 
   return (
     <section
-      className={cn("card p-4 transition-colors duration-300", complete && "border-[var(--mint)]")}
+      className={cn("card p-4 transition-colors duration-300", complete && "border-[var(--good)]")}
       aria-labelledby={`exercise-${block.routineExerciseId}`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -363,7 +363,7 @@ function SetRow({
     <li
       className={cn(
         "flex items-center gap-2 rounded-[2px] border p-2 transition-colors duration-200",
-        done ? "border-[var(--mint)] bg-surface-2" : "border-line bg-surface",
+        done ? "border-[var(--good)] bg-surface-2" : "border-line bg-surface",
       )}
     >
       <span className="tnum flex size-8 shrink-0 items-center justify-center rounded-[2px] bg-surface-2 text-xs font-bold text-ink-faint">
@@ -404,7 +404,7 @@ function SetRow({
           onClick={clear}
           disabled={pending}
           aria-label={`Clear set ${setIndex}`}
-          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink-faint transition-colors duration-150 hover:bg-surface-3 hover:text-[var(--coral)]"
+          className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink-faint transition-colors duration-150 hover:bg-surface-3 hover:text-[var(--bad)]"
         >
           <Trash2 className="size-4" aria-hidden />
         </button>
@@ -460,7 +460,7 @@ function RestTimer({
       aria-live="polite"
       className="fixed inset-x-4 bottom-28 z-40 mx-auto flex max-w-lg items-center gap-3 rounded-[2px] border border-line bg-surface/95 px-4 py-3 shadow-[var(--shadow-lift)] backdrop-blur-xl"
     >
-      <Timer className="size-4 shrink-0 text-[var(--pink-deep)]" aria-hidden />
+      <Timer className="size-4 shrink-0 text-[var(--accent)]" aria-hidden />
       <p className="min-w-0 flex-1 text-sm font-semibold text-ink">
         {remaining > 0 ? `Rest ${formatSeconds(remaining)}` : "Go again"}
       </p>

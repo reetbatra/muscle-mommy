@@ -92,7 +92,7 @@ function DayCard({
         aria-expanded={open}
         className="flex w-full cursor-pointer items-center gap-3 p-4 text-left transition-colors duration-150 hover:bg-surface-2"
       >
-        <span className="tnum flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-sm font-bold text-[var(--pink-deep)]">
+        <span className="tnum flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-sm font-bold text-[var(--accent)]">
           {day.day_index}
         </span>
         <span className="min-w-0 flex-1">
@@ -216,8 +216,8 @@ function RemoveButton({ id, name }: { id: string; name: string }) {
       className={cn(
         "flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-150",
         confirming
-          ? "bg-[var(--coral)] text-white"
-          : "text-ink-faint hover:bg-surface-2 hover:text-[var(--coral)]",
+          ? "bg-[var(--bad)] text-white"
+          : "text-ink-faint hover:bg-surface-2 hover:text-[var(--bad)]",
       )}
     >
       <Trash2 className="size-4" aria-hidden />
@@ -264,7 +264,7 @@ function DaySheet({
             type="checkbox"
             checked={restAfter}
             onChange={(e) => setRestAfter(e.target.checked)}
-            className="size-5 accent-[var(--pink-deep)]"
+            className="size-5 accent-[var(--accent)]"
           />
           <span className="text-sm font-semibold text-ink">Rest day after this one</span>
         </label>
@@ -529,7 +529,7 @@ function ExerciseSheet({
             type="checkbox"
             checked={draft.to_failure}
             onChange={(e) => setDraft((d) => ({ ...d, to_failure: e.target.checked }))}
-            className="size-5 accent-[var(--pink-deep)]"
+            className="size-5 accent-[var(--accent)]"
           />
           <span className="text-sm font-semibold text-ink">Take the last set to failure</span>
         </label>

@@ -266,7 +266,7 @@ export function OnboardingFlow({ defaultName }: { defaultName: string }) {
                 <div className="flex items-start justify-between gap-3">
                   <h2 className="font-display text-base font-semibold text-ink">{option.name}</h2>
                   {active ? (
-                    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--pink-deep)] text-white">
+                    <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-white">
                       <Check className="size-3.5" aria-hidden />
                     </span>
                   ) : null}

@@ -80,7 +80,7 @@ export function SessionFromHash() {
         aria-live="polite"
         className="mb-4 flex items-center gap-2.5 rounded-2xl border border-line bg-surface-2 px-4 py-3 text-sm font-semibold text-ink"
       >
-        <Loader2 className="size-4 animate-spin text-[var(--pink-deep)]" aria-hidden />
+        <Loader2 className="size-4 animate-spin text-[var(--accent)]" aria-hidden />
         Signing you in
       </div>
     );
@@ -89,7 +89,7 @@ export function SessionFromHash() {
   return (
     <p
       role="alert"
-      className="mb-4 rounded-2xl border border-[var(--coral)] bg-surface-2 px-4 py-3 text-sm font-medium text-ink"
+      className="mb-4 rounded-2xl border border-[var(--bad)] bg-surface-2 px-4 py-3 text-sm font-medium text-ink"
     >
       {message ?? "That link did not work. Ask for a new one below."}
     </p>

@@ -11,12 +11,12 @@ export function ProgressRing({
   max,
   size = 96,
   thickness = 9,
-  color = "var(--pink-deep)",
+  color = "var(--accent)",
   trackColor = "var(--surface-3)",
   label,
   children,
   className,
-  overflowColor = "var(--coral)",
+  overflowColor = "var(--bad)",
 }: {
   value: number;
   max: number;

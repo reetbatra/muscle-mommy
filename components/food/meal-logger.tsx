@@ -190,7 +190,7 @@ export function MealLogger({
           aria-live="polite"
           className="card mt-3 flex items-center gap-3 p-4 text-sm text-ink-soft"
         >
-          <Loader2 className="size-4 shrink-0 animate-spin text-[var(--pink-deep)]" aria-hidden />
+          <Loader2 className="size-4 shrink-0 animate-spin text-[var(--accent)]" aria-hidden />
           Working out what is on the plate. This takes a few seconds.
         </div>
       ) : null}
@@ -254,7 +254,7 @@ export function MealLogger({
                   <span
                     className={cn(
                       "font-bold",
-                      meal.ai_confidence === "low" && "text-[var(--coral)]",
+                      meal.ai_confidence === "low" && "text-[var(--bad)]",
                     )}
                   >
                     {CONFIDENCE_COPY[meal.ai_confidence]}.{" "}
@@ -344,8 +344,8 @@ function DeleteMealButton({ mealId, title }: { mealId: string; title: string }) 
       className={cn(
         "flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 border-l border-line text-xs font-bold transition-colors duration-150",
         confirming
-          ? "bg-[var(--coral)] text-white"
-          : "text-ink-soft hover:bg-surface-2 hover:text-[var(--coral)]",
+          ? "bg-[var(--bad)] text-white"
+          : "text-ink-soft hover:bg-surface-2 hover:text-[var(--bad)]",
       )}
       aria-label={confirming ? `Confirm deleting ${title}` : `Delete ${title}`}
     >

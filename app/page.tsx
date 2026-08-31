@@ -60,7 +60,7 @@ export default function LandingPage() {
         {PILLARS.map(({ icon: Icon, title, body }) => (
           <div key={title} className="card p-5">
             <div className="flex items-start gap-4">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-surface-2 text-[var(--pink-deep)]">
+              <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-surface-2 text-[var(--accent)]">
                 <Icon className="size-5" aria-hidden />
               </div>
               <div>
@@ -73,7 +73,7 @@ export default function LandingPage() {
       </section>
 
       <section className="card mt-8 p-6" aria-labelledby="overload-heading">
-        <div className="flex items-center gap-2 text-[var(--pink-deep)]">
+        <div className="flex items-center gap-2 text-[var(--accent)]">
           <TrendingUp className="size-5" aria-hidden />
           <p className="text-xs font-bold tracking-[0.14em] uppercase">The whole point</p>
         </div>

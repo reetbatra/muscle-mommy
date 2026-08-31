@@ -66,7 +66,7 @@ export function TargetChips({
           ) : null}
           <span>{target.reps}</span>
           {target.toFailure ? (
-            <span className="text-[10px] font-bold text-[var(--pink-deep)]">+</span>
+            <span className="text-[10px] font-bold text-[var(--accent)]">+</span>
           ) : null}
         </li>
       ))}

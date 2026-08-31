@@ -13,10 +13,10 @@ export const metadata: Metadata = { title: "Lift" };
 export const dynamic = "force-dynamic";
 
 const ACCENT: Record<string, string> = {
-  pink: "var(--pink-deep)",
-  lilac: "var(--lilac-deep)",
-  cyan: "var(--cyan)",
-  mint: "var(--mint)",
+  pink: "var(--accent)",
+  lilac: "var(--accent-soft)",
+  cyan: "var(--accent-soft)",
+  mint: "var(--good)",
 };
 
 export default async function LiftPage() {

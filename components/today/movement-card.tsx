@@ -23,10 +23,10 @@ export function StepsCard({
         max={target}
         size={88}
         thickness={9}
-        color="var(--lilac-deep)"
+        color="var(--accent-soft)"
         label="Steps against target"
       >
-        <Footprints className="size-4 text-[var(--lilac-deep)]" aria-hidden />
+        <Footprints className="size-4 text-[var(--accent-soft)]" aria-hidden />
         <span className="tnum font-display mt-0.5 text-lg leading-none font-bold text-ink">
           {steps === null ? "—" : steps.toLocaleString()}
         </span>
