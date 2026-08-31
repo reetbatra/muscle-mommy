@@ -27,10 +27,24 @@ export function Sheet({
   const panelRef = React.useRef<HTMLDivElement>(null);
   const headingId = React.useId();
 
+  /*
+   * onClose is almost always an inline arrow, so it gets a fresh identity on
+   * every render. Listing it as a dependency re-ran this effect on every
+   * keystroke, and the focus() call inside pulled focus off whatever input was
+   * being typed into. On a phone that closes the keyboard after each character.
+   *
+   * The handler lives in a ref instead, so the effect depends only on `open`
+   * and runs once per opening.
+   */
+  const onCloseRef = React.useRef(onClose);
+  React.useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", onKey);
     const previousOverflow = document.body.style.overflow;
@@ -40,7 +54,7 @@ export function Sheet({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, onClose]);
+  }, [open]);
 
   return (
     <AnimatePresence>

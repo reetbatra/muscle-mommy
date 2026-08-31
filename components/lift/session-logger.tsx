@@ -435,17 +435,24 @@ function RestTimer({
     Math.max(0, Math.ceil((rest.endsAt - Date.now()) / 1000)),
   );
 
+  // onDone is an inline arrow, so depending on it would tear down and rebuild
+  // the interval on every parent render.
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  });
+
   useEffect(() => {
     const id = window.setInterval(() => {
       const next = Math.max(0, Math.ceil((rest.endsAt - Date.now()) / 1000));
       setRemaining(next);
       if (next === 0) {
         window.clearInterval(id);
-        window.setTimeout(onDone, 1500);
+        window.setTimeout(() => onDoneRef.current(), 1500);
       }
     }, 250);
     return () => window.clearInterval(id);
-  }, [rest.endsAt, onDone]);
+  }, [rest.endsAt]);
 
   return (
     <div
