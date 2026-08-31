@@ -14,7 +14,7 @@ const HEALTH_FIELDS = [
   ["steps", "Steps", "Sum", true],
   ["active_kcal", "Active Energy", "Sum", true],
   ["basal_kcal", "Resting Energy", "Sum", true],
-  ["weight_kg", "Weight", "Latest", true],
+  ["weight_kg", "Weight", "Newest one", true],
   ["exercise_minutes", "Exercise Minutes", "Sum", false],
   ["sleep_minutes", "Sleep", "Sum", false],
   ["resting_hr", "Resting Heart Rate", "Average", false],
@@ -125,8 +125,13 @@ export function HealthSync({
                 <strong className="text-ink">Muscle Mommy Sync</strong>.
               </Step>
               <Step n={2}>
-                Add a <strong className="text-ink">Find Health Samples Where</strong> action for
-                each thing you want, set the date to Today, and pick the right calculation:
+                Start with steps alone and get that working before adding anything else. Add{" "}
+                <strong className="text-ink">Find Health Samples Where</strong>, set Type to Steps
+                and add a filter for Start Date is Today. Then add{" "}
+                <strong className="text-ink">Calculate Statistics</strong>, set Operation to Sum
+                over Value, and a <strong className="text-ink">Set Variable</strong> named{" "}
+                <code className="rounded bg-surface-3 px-1 text-xs">steps</code>. Repeat that
+                trio for each row below:
                 <ul className="tnum mt-2 space-y-1 rounded-xl bg-surface-2 p-3 text-xs">
                   {HEALTH_FIELDS.map(([key, sample, calc, essential]) => (
                     <li key={key} className="flex justify-between gap-3">
@@ -143,7 +148,10 @@ export function HealthSync({
                   ))}
                 </ul>
                 The first four are what the deficit and the step ring run on. The rest are extra.
-                Everything except the date is optional.
+                Everything except the date is optional. Weight is the odd one out: instead of
+                Calculate Statistics, set Sort by to Start Date with Latest First and Limit to 1,
+                then add <strong className="text-ink">Get Details of Health Sample</strong> and
+                pick Value.
               </Step>
               <Step n={3}>
                 Add a <strong className="text-ink">Get Contents of URL</strong> action pointed at
