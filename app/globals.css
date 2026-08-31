@@ -1,26 +1,277 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ---------------------------------------------------------------------------
+   Muscle Mommy design tokens
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+   Semantic variables flip with the colour scheme, so components almost never
+   need a `dark:` variant. Decorative pinks are separate from the pinks used
+   behind white text, because the pretty one fails contrast and the other does
+   not.
+--------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --bg: #fff6fb;
+  --bg-tint: #ffeaf6;
+  --surface: #ffffff;
+  --surface-2: #fdf2f8;
+  --surface-3: #fbe8f3;
+  --border: #f6d8ea;
+  --border-strong: #eebcd9;
+
+  --ink: #3b0b33;
+  --ink-soft: #6b4a6a;
+  --ink-faint: #9b7d99;
+
+  --pink: #ec4899;
+  --pink-deep: #db2777;
+  --lilac: #a855f7;
+  --lilac-deep: #7e22ce;
+  --cyan: #06b6d4;
+  --mint: #10b981;
+  --gold: #d97706;
+  --coral: #f43f5e;
+
+  --ring: #f472b6;
+  --shadow-soft: 0 1px 2px rgb(219 39 119 / 0.06), 0 8px 24px -12px rgb(219 39 119 / 0.28);
+  --shadow-lift: 0 2px 4px rgb(219 39 119 / 0.08), 0 18px 40px -18px rgb(219 39 119 / 0.36);
+  --glitter: linear-gradient(115deg, #f472b6 0%, #c084fc 46%, #67e8f9 100%);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg: #140816;
+    --bg-tint: #1b0b20;
+    --surface: #1f0f26;
+    --surface-2: #2a1531;
+    --surface-3: #351b3e;
+    --border: #3d2247;
+    --border-strong: #55305f;
+
+    --ink: #fdf2f8;
+    --ink-soft: #d6b6d8;
+    --ink-faint: #a382a8;
+
+    --pink: #f9a8d4;
+    --pink-deep: #f472b6;
+    --lilac: #d8b4fe;
+    --lilac-deep: #c084fc;
+    --cyan: #67e8f9;
+    --mint: #6ee7b7;
+    --gold: #fcd34d;
+    --coral: #fda4af;
+
+    --ring: #f9a8d4;
+    --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 18px 40px -18px rgb(0 0 0 / 0.7);
   }
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #140816;
+  --bg-tint: #1b0b20;
+  --surface: #1f0f26;
+  --surface-2: #2a1531;
+  --surface-3: #351b3e;
+  --border: #3d2247;
+  --border-strong: #55305f;
+
+  --ink: #fdf2f8;
+  --ink-soft: #d6b6d8;
+  --ink-faint: #a382a8;
+
+  --pink: #f9a8d4;
+  --pink-deep: #f472b6;
+  --lilac: #d8b4fe;
+  --lilac-deep: #c084fc;
+  --cyan: #67e8f9;
+  --mint: #6ee7b7;
+  --gold: #fcd34d;
+  --coral: #fda4af;
+
+  --ring: #f9a8d4;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 18px 40px -18px rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-tint: var(--bg-tint);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+
+  --color-pink: var(--pink);
+  --color-pink-deep: var(--pink-deep);
+  --color-lilac: var(--lilac);
+  --color-lilac-deep: var(--lilac-deep);
+  --color-cyan: var(--cyan);
+  --color-mint: var(--mint);
+  --color-gold: var(--gold);
+  --color-coral: var(--coral);
+
+  --font-display: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+}
+
+/* --------------------------------------------------------------------------- */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 12% -8%, color-mix(in oklab, var(--pink) 24%, transparent), transparent 70%),
+    radial-gradient(ellipse 70% 45% at 92% 4%, color-mix(in oklab, var(--lilac) 20%, transparent), transparent 70%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+/* Numbers that change every tap should not reflow the layout. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* --- reusable surfaces --------------------------------------------------- */
+
+.card {
+  background-color: color-mix(in oklab, var(--surface) 88%, transparent);
+  backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-soft);
+}
+
+.glitter-text {
+  background: var(--glitter);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: glitter-pan 7s ease-in-out infinite;
+}
+
+.glitter-fill {
+  background: var(--glitter);
+  background-size: 220% 100%;
+  animation: glitter-pan 7s ease-in-out infinite;
+}
+
+/* A slow diagonal shine that reads as sparkle without becoming a strobe. */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 32%,
+    rgb(255 255 255 / 0.42) 48%,
+    transparent 64%
+  );
+  transform: translateX(-120%);
+  animation: shimmer-sweep 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glitter-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+@keyframes shimmer-sweep {
+  0%, 62%  { transform: translateX(-120%); }
+  100%     { transform: translateX(120%); }
+}
+
+@keyframes pop-in {
+  0%   { transform: scale(0.86); opacity: 0; }
+  60%  { transform: scale(1.04); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.pop-in { animation: pop-in 240ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+@keyframes ring-fill {
+  from { stroke-dashoffset: var(--dash-from); }
+  to   { stroke-dashoffset: var(--dash-to); }
+}
+
+/* --- iOS standalone chrome ------------------------------------------------ */
+
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+/* Stop the elastic bounce revealing white behind the app shell. */
+@media (display-mode: standalone) {
+  body { overscroll-behavior: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .shimmer::after { display: none; }
+}
+
+/* Chrome/Safari number spinners are useless on a weight field. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
 }
