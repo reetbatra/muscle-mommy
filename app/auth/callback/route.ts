@@ -17,10 +17,12 @@ export async function GET(request: Request) {
     );
   }
 
-  // No code usually means the session came back in the URL fragment instead,
-  // which only the browser can see. The login page picks that up.
+  // No code is the normal case now: the session comes back in the URL fragment,
+  // which a server can never see. Bounce to the login page with the fragment
+  // intact and let the browser finish the job. No error, because nothing is
+  // wrong.
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=missing_code", url.origin));
+    return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(safeNext)}`, url.origin));
   }
 
   const supabase = await createClient();

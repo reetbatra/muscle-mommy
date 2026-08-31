@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/client";
  */
 export function SessionFromHash() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [state, setState] = useState<"idle" | "working" | "failed">("idle");
   const [message, setMessage] = useState<string | null>(null);
 
@@ -63,10 +64,12 @@ export function SessionFromHash() {
           .eq("id", user.id)
           .maybeSingle();
 
-        router.replace(profile?.onboarded_at ? "/today" : "/onboarding");
+        const next = searchParams.get("next");
+        const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "/today";
+        router.replace(profile?.onboarded_at ? safeNext : "/onboarding");
         router.refresh();
       });
-  }, [router]);
+  }, [router, searchParams]);
 
   if (state === "idle") return null;
 
