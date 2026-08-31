@@ -151,3 +151,30 @@
 .pv .pv-eyebrow {
   font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 }
+
+
+/* Handwriting is decoration, never information. It appears at 20px and up,
+   never on anything you have to read quickly, and never on a number. */
+.pv .pv-hand {
+  font-family: var(--font-script), var(--font-garamond), cursive;
+  line-height: 1.4;
+}
+
+.pv-sparkle {
+  display: inline-block;
+  vertical-align: middle;
+  color: var(--p-accent);
+}
+
+@keyframes pv-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%      { opacity: 1; transform: scale(1); }
+}
+.pv-sparkle[data-twinkle="true"] {
+  animation: pv-twinkle 2.8s ease-in-out infinite;
+}
+.pv-sparkle[data-twinkle="true"]:nth-of-type(2) { animation-delay: 0.9s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-sparkle[data-twinkle="true"] { animation: none; opacity: 1; }
+}

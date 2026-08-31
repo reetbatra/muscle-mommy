@@ -32,22 +32,59 @@ const LIFTS = [
   { name: "Hip Thrust", cue: "50kg", sets: "8 · 8 · 8", last: "15 · 16 · 14 at 45kg", up: true },
 ];
 
+/** Four-point sparkle. Drawn, not an emoji, so it takes the accent colour. */
+function Sparkle({ size = 14, twinkle = false }: { size?: number; twinkle?: boolean }) {
+  return (
+    <svg
+      className="pv-sparkle"
+      data-twinkle={twinkle}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M12 0c.9 5.7 5.4 10.2 11.1 11.1C17.4 12 12.9 16.5 12 22.2 11.1 16.5 6.6 12 .9 11.1 6.6 10.2 11.1 5.7 12 0Z" />
+    </svg>
+  );
+}
+
 export function PreviewSwitcher() {
   return (
     <div className="pv pv-grain" style={THEME.vars as React.CSSProperties}>
-      <div style={{ margin: "0 auto", maxWidth: 430, padding: "34px 24px 56px" }}>
-        <p className="pv-eyebrow">Monday 31 August</p>
+      <div style={{ margin: "0 auto", maxWidth: 430, padding: "30px 24px 56px" }}>
+        <p
+          className="pv-hand"
+          style={{
+            fontSize: 21,
+            color: "var(--p-accent)",
+            margin: 0,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          Muscle Mommy
+          <Sparkle size={13} twinkle />
+        </p>
+
+        <p className="pv-eyebrow" style={{ marginTop: 26 }}>
+          Monday 31 August
+        </p>
         <h1
           style={{
-            fontSize: 42,
+            fontSize: 40,
             lineHeight: 1.05,
             letterSpacing: "-0.02em",
             margin: "8px 0 0",
             fontWeight: 400,
           }}
         >
-          Good afternoon
+          Good afternoon,
         </h1>
+        <p className="pv-hand" style={{ fontSize: 34, margin: "10px 0 0", color: "var(--p-accent)" }}>
+          Reet
+        </p>
 
         <Block label="Next up">
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
@@ -74,8 +111,18 @@ export function PreviewSwitcher() {
             <span className="pv-num" style={{ color: "var(--p-soft)", fontSize: 16 }}>
               / 1490
             </span>
-            <span style={{ marginLeft: "auto", color: "var(--p-good)", fontSize: 16 }}>
+            <span
+              style={{
+                marginLeft: "auto",
+                color: "var(--p-good)",
+                fontSize: 16,
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
               510 under
+              <Sparkle size={12} twinkle />
             </span>
           </div>
 
@@ -109,24 +156,34 @@ export function PreviewSwitcher() {
                     fontSize: 17,
                     fontWeight: 600,
                     color: lift.up ? "var(--p-accent)" : "var(--p-ink)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
                   }}
                 >
-                  {lift.up ? "↑ " : ""}
+                  {lift.up ? <Sparkle size={13} twinkle /> : null}
                   {lift.cue}
                 </span>
               </div>
               <p className="pv-num" style={{ fontSize: 20, fontWeight: 600, margin: "8px 0 4px" }}>
                 {lift.sets}
               </p>
-              <p className="pv-num" style={{ fontSize: 13, color: "var(--p-faint)", margin: 0 }}>
-                was {lift.last}
-              </p>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <p className="pv-num" style={{ fontSize: 13, color: "var(--p-faint)", margin: 0 }}>
+                  was {lift.last}
+                </p>
+                {lift.up ? (
+                  <span className="pv-hand" style={{ fontSize: 20, color: "var(--p-accent)" }}>
+                    earned it
+                  </span>
+                ) : null}
+              </div>
               {i < LIFTS.length - 1 ? <hr className="pv-rule" style={{ marginTop: 20 }} /> : null}
             </div>
           ))}
         </Block>
 
-        <Block label="Habits" trailing="5 / 8">
+        <Block label="Habits" trailing="5 / 8" note="three to go">
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
             {HABITS.map((habit, i) => (
               <li key={habit.label}>
@@ -188,16 +245,26 @@ export function PreviewSwitcher() {
 function Block({
   label,
   trailing,
+  note,
   children,
 }: {
   label: string;
   trailing?: string;
+  note?: string;
   children: React.ReactNode;
 }) {
   return (
     <section style={{ marginTop: 38 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
         <p className="pv-eyebrow">{label}</p>
+        {note ? (
+          <span
+            className="pv-hand"
+            style={{ marginLeft: "auto", fontSize: 19, color: "var(--p-accent)" }}
+          >
+            {note}
+          </span>
+        ) : null}
         {trailing ? (
           <span className="pv-num" style={{ fontSize: 13, color: "var(--p-faint)" }}>
             {trailing}
