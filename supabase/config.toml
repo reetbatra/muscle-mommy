@@ -18,6 +18,13 @@ refresh_token_reuse_interval = 10
 enable_signup = true
 enable_anonymous_sign_ins = false
 
+# The email carries a six digit code as well as a link. The code is what makes
+# sign-in reliable: it is typed into the tab that asked for it, so there is
+# nothing to transfer between browsers and nothing that can go missing.
+[auth.email.template.magic_link]
+subject = "Your Muscle Mommy code"
+content_path = "./supabase/templates/magic_link.html"
+
 [auth.email]
 enable_signup = true
 double_confirm_changes = true

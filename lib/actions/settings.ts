@@ -262,3 +262,31 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+/**
+ * Sets a password on the signed-in account.
+ *
+ * This is what makes sign-in reliable here. The project's built-in mail is
+ * rate limited to a couple of messages an hour and cannot be customised on
+ * this plan, so anything that depends on receiving an email is fragile. A
+ * password does not depend on anything.
+ */
+export async function setPassword(password: string) {
+  const value = z
+    .string()
+    .min(8, "Use at least 8 characters.")
+    .max(128)
+    .parse(password);
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("NOT_AUTHENTICATED");
+
+  const { error } = await supabase.auth.updateUser({ password: value });
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/settings");
+  return { email: user.email ?? null };
+}

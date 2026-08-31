@@ -24,6 +24,7 @@ import { HealthSync } from "@/components/settings/health-sync";
 import { HabitsManager } from "@/components/settings/habits-manager";
 import { HevySync } from "@/components/settings/hevy-sync";
 import { FoodMemory, type MemoryRow } from "@/components/settings/food-memory";
+import { PasswordForm } from "@/components/settings/password-form";
 import { getHevyStatus } from "@/lib/actions/hevy";
 import type { Exercise } from "@/lib/domain/types";
 import type { Habit, IngestToken } from "@/lib/domain/types";
@@ -160,10 +161,11 @@ export default async function SettingsPage() {
           title="Account"
           summary={ctx.email ?? "Signed in"}
         >
-          <p className="text-sm leading-relaxed text-ink-soft">
-            You sign in once per device and the session keeps itself alive, so you should never
-            see the login screen again on this phone. Your data lives on a server rather than in
-            Safari, which is what stops it disappearing when the browser clears its storage.
+          <PasswordForm hasPassword={Boolean(user.user_metadata?.has_password)} />
+
+          <p className="mt-6 border-t border-line pt-4 text-[15px] leading-relaxed text-ink-soft">
+            Your data lives on a server rather than in Safari, which is what stops it disappearing
+            when the browser clears its storage.
           </p>
           <form action={signOut} className="mt-4">
             <Button type="submit" variant="ghost" size="md" block className="text-[var(--coral)]">
