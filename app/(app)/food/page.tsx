@@ -1,18 +1,30 @@
 import type { Metadata } from "next";
-import { getSessionContext, getTodayData } from "@/lib/data";
+import { getSessionContext, getTodayData, getWeekDays } from "@/lib/data";
 import { signMealPhotos } from "@/lib/actions/food";
 import { addDaysISO } from "@/lib/domain/dates";
 import { energyBalance, macroLines, sumMeals } from "@/lib/domain/macros";
+import { weeklyBalance } from "@/lib/domain/week";
 import { Screen, ScreenHeader } from "@/components/screen";
 import { EnergyCard } from "@/components/today/energy-card";
 import { MealLogger } from "@/components/food/meal-logger";
+import { WeekCard } from "@/components/today/week-card";
 
 export const metadata: Metadata = { title: "Food" };
 export const dynamic = "force-dynamic";
 
 export default async function FoodPage() {
   const ctx = await getSessionContext();
-  const data = await getTodayData(ctx.today, addDaysISO(ctx.today, -1));
+  const [data, weekDays] = await Promise.all([
+    getTodayData(ctx.today, addDaysISO(ctx.today, -1)),
+    getWeekDays(ctx.today),
+  ]);
+
+  const week = weeklyBalance({
+    today: ctx.today,
+    days: weekDays,
+    calorieTarget: ctx.goals.calorie_target,
+    maintenanceKcal: ctx.goals.maintenance_kcal,
+  });
 
   const totals = sumMeals(data.meals);
   const balance = energyBalance({
@@ -38,16 +50,15 @@ export default async function FoodPage() {
     <Screen>
       <ScreenHeader
         eyebrow={
-          balance.verdict === "pending"
+          week.loggedDays === 0
             ? "Nothing logged yet"
-            : balance.remainingToTarget >= 0
-              ? `${Math.round(balance.remainingToTarget)} kcal left today`
-              : `${Math.abs(Math.round(balance.remainingToTarget))} kcal over target`
+            : `${Math.round(week.perDayRemaining)} kcal a day to stay on the week`
         }
         title="Food"
       />
 
       <div className="space-y-4">
+        <WeekCard balance={week} />
         <EnergyCard balance={balance} macros={macros} calorieTarget={ctx.goals.calorie_target} />
         <MealLogger meals={data.meals} photoUrls={photoUrls} today={ctx.today} />
       </div>

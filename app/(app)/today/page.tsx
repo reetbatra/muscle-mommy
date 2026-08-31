@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { getRoutine, getSessionContext, getTodayData } from "@/lib/data";
+import { getRoutine, getSessionContext, getTodayData, getWeekDays } from "@/lib/data";
 import { addDaysISO } from "@/lib/domain/dates";
 import { energyBalance, macroLines, sumMeals } from "@/lib/domain/macros";
+import { weeklyBalance } from "@/lib/domain/week";
 import { averageCycleLength, cycleDayFor, derivePeriodStarts, phaseFor } from "@/lib/domain/cycle";
 import { todayState } from "@/lib/domain/schedule";
 import { Screen } from "@/components/screen";
@@ -10,16 +11,25 @@ import { EnergyCard } from "@/components/today/energy-card";
 import { NextWorkoutCard, StepsCard } from "@/components/today/movement-card";
 import { CycleChip } from "@/components/today/cycle-chip";
 import { PagesRead } from "@/components/today/pages-read";
+import { WeekCard } from "@/components/today/week-card";
 
 export const metadata: Metadata = { title: "Today" };
 export const dynamic = "force-dynamic";
 
 export default async function TodayPage() {
   const ctx = await getSessionContext();
-  const [data, routine] = await Promise.all([
+  const [data, routine, weekDays] = await Promise.all([
     getTodayData(ctx.today, addDaysISO(ctx.today, -90)),
     getRoutine(),
+    getWeekDays(ctx.today),
   ]);
+
+  const week = weeklyBalance({
+    today: ctx.today,
+    days: weekDays,
+    calorieTarget: ctx.goals.calorie_target,
+    maintenanceKcal: ctx.goals.maintenance_kcal,
+  });
 
   const totals = sumMeals(data.meals);
   const balance = energyBalance({
@@ -95,6 +105,8 @@ export default async function TodayPage() {
           state={state.kind}
           exerciseCount={upcomingFull?.routine_exercises.length ?? 0}
         />
+
+        <WeekCard balance={week} />
 
         <EnergyCard
           balance={balance}

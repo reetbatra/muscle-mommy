@@ -6,6 +6,7 @@ import { ChartFrame, ChartTooltip } from "./chart-frame";
 import { useChartPalette } from "./use-chart-palette";
 import { Segmented } from "@/components/ui/segmented";
 import { Sparkle } from "@/components/ui/sparkle";
+import { projectedFatLossKg } from "@/lib/domain/week";
 import type { Report, ReportPeriod } from "@/lib/report";
 
 const AXIS = { fontSize: 11, fontWeight: 600 };
@@ -54,10 +55,16 @@ function Headline({ report }: { report: Report }) {
       good: report.overloadPct >= 50,
     },
     {
-      label: "Days under",
-      value: report.loggedFoodDays > 0 ? `${report.deficitDays}` : "—",
-      note: report.loggedFoodDays > 0 ? `of ${report.loggedFoodDays} logged` : "nothing logged",
-      good: report.deficitDays > 0,
+      label: "Total deficit",
+      value:
+        report.netDeficit !== null
+          ? `${report.netDeficit >= 0 ? "" : "+"}${Math.abs(Math.round(report.netDeficit)).toLocaleString()}`
+          : "—",
+      note:
+        report.netDeficit !== null
+          ? `about ${projectedFatLossKg(report.netDeficit).toFixed(2)}kg, over ${report.loggedFoodDays} logged ${report.loggedFoodDays === 1 ? "day" : "days"}`
+          : "nothing logged",
+      good: (report.netDeficit ?? 0) > 0,
     },
     {
       label: "Weight",

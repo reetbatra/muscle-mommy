@@ -23,6 +23,8 @@ export type Report = {
   macroAverage: MacroTotals;
   loggedFoodDays: number;
   deficitDays: number;
+  /** Burned minus eaten across logged days only. Positive is a deficit. */
+  netDeficit: number | null;
   sessions: number;
   overloadPct: number;
   liftsUp: number;
@@ -112,6 +114,11 @@ export async function getReport(
     (d) => d.eaten !== null && d.burned !== null && d.eaten < d.burned,
   ).length;
   const loggedFoodDays = new Set((meals.data ?? []).map((m) => m.log_date)).size;
+  // Only days with food logged. A day you forgot is not a day you fasted.
+  const loggedDayRows = days.filter((d) => d.eaten !== null);
+  const netDeficit = loggedDayRows.length
+    ? loggedDayRows.reduce((sum, d) => sum + ((d.burned ?? maintenanceKcal) - (d.eaten ?? 0)), 0)
+    : null;
   const mealTotals = sumMeals(meals.data ?? []);
   const macroAverage: MacroTotals = loggedFoodDays
     ? {
@@ -205,6 +212,7 @@ export async function getReport(
     macroAverage,
     loggedFoodDays,
     deficitDays,
+    netDeficit,
     sessions: (sessions.data ?? []).length,
     overloadPct: score.pct,
     liftsUp: score.up,

@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { requireUser } from "@/lib/supabase/server";
 import { safeTimezone, todayISO } from "@/lib/domain/dates";
+import { weekDates } from "@/lib/domain/week";
 import type {
   BodyComp,
   CycleDay,
@@ -259,3 +260,51 @@ export async function getTodayData(today: string, historyStart: string): Promise
     latestBodyComp: (bodyComp.data ?? null) as BodyComp | null,
   };
 }
+
+/**
+ * Consumed and burned for each day of the current week. Days with no food
+ * logged come back null rather than zero, because forgetting to log is not the
+ * same as eating nothing.
+ */
+export const getWeekDays = cache(async (todayISO: string) => {
+  const { supabase, user } = await requireUser();
+  const dates = weekDates(todayISO);
+  const start = dates[0];
+  const end = dates[6];
+
+  const [{ data: meals, error: mealsError }, { data: health, error: healthError }] =
+    await Promise.all([
+      supabase
+        .from("meals")
+        .select("log_date, kcal")
+        .eq("user_id", user.id)
+        .gte("log_date", start)
+        .lte("log_date", end),
+      supabase
+        .from("health_days")
+        .select("log_date, basal_kcal, active_kcal")
+        .eq("user_id", user.id)
+        .gte("log_date", start)
+        .lte("log_date", end),
+    ]);
+
+  if (mealsError) throw new Error(`Could not load the week: ${mealsError.message}`);
+  if (healthError) throw new Error(`Could not load the week: ${healthError.message}`);
+
+  const consumedByDate = new Map<string, number>();
+  for (const meal of meals ?? []) {
+    consumedByDate.set(meal.log_date, (consumedByDate.get(meal.log_date) ?? 0) + (meal.kcal ?? 0));
+  }
+  const healthByDate = new Map((health ?? []).map((h) => [h.log_date, h] as const));
+
+  return dates.map((date) => {
+    const h = healthByDate.get(date);
+    const basal = h?.basal_kcal ?? null;
+    const active = h?.active_kcal ?? null;
+    return {
+      date,
+      consumed: consumedByDate.get(date) ?? null,
+      burned: basal !== null || active !== null ? (basal ?? 0) + (active ?? 0) || null : null,
+    };
+  });
+});
