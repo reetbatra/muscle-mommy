@@ -1,4 +1,5 @@
 import { Flame, TrendingDown, TrendingUp, Minus } from "lucide-react";
+import { Sparkle } from "@/components/ui/sparkle";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import type { EnergyBalance, MacroLine } from "@/lib/domain/macros";
@@ -56,8 +57,9 @@ export function EnergyCard({
         </ProgressRing>
 
         <div className="min-w-0 flex-1">
-          <p className="font-display text-xl leading-tight font-semibold text-ink">
+          <p className="font-display flex items-center gap-2 text-xl leading-tight text-ink">
             {balance.headline}
+            {balance.verdict === "deficit" ? <Sparkle size={13} twinkle /> : null}
           </p>
           <p className="mt-1 text-sm leading-relaxed text-ink-soft">{balance.detail}</p>
           {balance.verdict !== "pending" ? (

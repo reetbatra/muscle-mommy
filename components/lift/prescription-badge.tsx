@@ -1,4 +1,5 @@
-import { ArrowUp, Check, Minus, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowUp, Check, Minus, TrendingUp } from "lucide-react";
+import { Sparkle } from "@/components/ui/sparkle";
 import type { PrescriptionStatus } from "@/lib/domain/overload";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ const STATUS = {
     className: "bg-surface-3 text-[var(--pink-deep)]",
   },
   first: {
-    icon: Sparkles,
+    icon: TrendingUp,
     label: "First time",
     className: "bg-surface-3 text-ink-soft",
   },
@@ -34,6 +35,7 @@ export function PrescriptionBadge({
 }) {
   const config = STATUS[status];
   const Icon = config.icon;
+  const earned = status === "add-weight" || status === "extend-reps";
   return (
     <span
       className={cn(
@@ -42,7 +44,7 @@ export function PrescriptionBadge({
         className,
       )}
     >
-      <Icon className="size-3" aria-hidden />
+      {earned ? <Sparkle size={11} twinkle /> : <Icon className="size-3" aria-hidden />}
       {config.label}
     </span>
   );
@@ -56,16 +58,16 @@ export function VerdictPill({
   reason: string;
 }) {
   const style = {
-    up: { icon: ArrowUp, color: "var(--mint)" },
-    same: { icon: Minus, color: "var(--gold)" },
-    down: { icon: Minus, color: "var(--coral)" },
-    first: { icon: Sparkles, color: "var(--ink-faint)" },
+    up: { icon: ArrowUp, color: "var(--good)" },
+    same: { icon: Minus, color: "var(--warn)" },
+    down: { icon: Minus, color: "var(--bad)" },
+    first: { icon: TrendingUp, color: "var(--ink-faint)" },
   }[verdict];
   const Icon = style.icon;
 
   return (
-    <span className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: style.color }}>
-      <Icon className="size-3.5 shrink-0" aria-hidden />
+    <span className="flex items-center gap-1.5 text-[13px] font-semibold" style={{ color: style.color }}>
+      {verdict === "up" ? <Sparkle size={12} twinkle /> : <Icon className="size-3.5 shrink-0" aria-hidden />}
       {reason}
     </span>
   );

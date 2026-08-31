@@ -32,7 +32,7 @@ export async function GET(_request: Request, ctx: { params: Promise<{ variant: s
           alignItems: "center",
           justifyContent: "center",
           borderRadius: radius,
-          background: "#8a6b33",
+          background: "#fbf9f4",
         }}
       >
         <svg
@@ -40,7 +40,7 @@ export async function GET(_request: Request, ctx: { params: Promise<{ variant: s
           height={size - padding * 2}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#fbf9f4"
+          stroke="#8a6b33"
           strokeWidth={2.1}
           strokeLinecap="round"
           strokeLinejoin="round"

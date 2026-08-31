@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Bed, ChevronRight, Dumbbell, Footprints, Moon, Play } from "lucide-react";
+import { Sparkle } from "@/components/ui/sparkle";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,10 +44,15 @@ export function StepsCard({
             </Link>
           </p>
         ) : (
-          <p className="tnum mt-1 text-[15px] text-ink-soft">
-            {steps >= target
-              ? "Goal met"
-              : `${(target - steps).toLocaleString()} to go`}
+          <p className="tnum mt-1 flex items-center gap-1.5 text-[15px] text-ink-soft">
+            {steps >= target ? (
+              <>
+                Goal met
+                <Sparkle size={12} twinkle />
+              </>
+            ) : (
+              `${(target - steps).toLocaleString()} to go`
+            )}
           </p>
         )}
 
@@ -106,7 +112,10 @@ export function NextWorkoutCard({
       <section className="card">
         <p className="eyebrow">Today</p>
         <h2 className="font-display mt-2 text-[30px] leading-tight text-ink">Done</h2>
-        <p className="hand mt-2 text-[20px]">that is the work</p>
+        <p className="hand mt-2 flex items-center gap-2 text-[20px]">
+          that is the work
+          <Sparkle size={13} twinkle />
+        </p>
       </section>
     );
   }

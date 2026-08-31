@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { createMeal, deleteMeal, updateMeal } from "@/lib/actions/food";
 import { MEAL_TYPES } from "@/lib/domain/food-schema";
 import { celebrate } from "@/lib/celebrate";
+import { Sparkle } from "@/components/ui/sparkle";
 import type { Meal } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 
@@ -100,6 +101,10 @@ export function MealLogger({
       />
 
       <div className="border-t border-line pt-4">
+        <p className="eyebrow mb-2 flex items-center gap-1.5">
+          Log a meal
+          <Sparkle size={10} />
+        </p>
         <Input
           value={note}
           onChange={(e) => setNote(e.target.value)}

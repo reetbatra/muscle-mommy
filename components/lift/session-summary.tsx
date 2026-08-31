@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, Flame, Timer, TrendingUp } from "lucide-react";
+import { Sparkle } from "@/components/ui/sparkle";
 import { VerdictPill } from "./prescription-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { describeSets, type ExerciseComparison, type LoadType, type LoggedSet } from "@/lib/domain/overload";
@@ -58,14 +59,18 @@ export function SessionSummary({
             Overload
           </h2>
         </div>
-        <p className="font-display mt-2 text-3xl leading-none font-bold text-ink">
+        <p className="font-display mt-2 flex items-center gap-2.5 text-3xl leading-none text-ink">
           <span className="tnum">{score.pct}%</span>
+          {score.pct >= 50 ? <Sparkle size={18} twinkle /> : null}
         </p>
-        <p className="mt-1.5 text-sm text-ink-soft">
+        <p className="mt-1.5 text-[15px] text-ink-soft">
           {score.scored === 0
             ? "Nothing to compare against yet. Next time there will be."
-            : `${score.up} of ${score.scored} exercises beat last time.`}
+            : `${score.up} of ${score.scored} beat last time.`}
         </p>
+        {score.pct >= 80 && score.scored > 1 ? (
+          <p className="hand mt-2 text-[21px]">that is a good day</p>
+        ) : null}
 
         {minutes !== null || estimatedKcal !== null ? (
           <dl className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-t border-line pt-4 text-sm">

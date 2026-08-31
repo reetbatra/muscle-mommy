@@ -4,12 +4,11 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 /**
- * The browser tab icon: the same diagonal dumbbell as the home-screen icon,
- * drawn with heavier strokes so it survives 32px. Bronze ground, paper mark,
- * matching the app.
+ * The browser tab icon. Paper ground, bronze dumbbell, one sparkle.
  *
- * It has to sit on the diagonal. Two blocks joined by a bar, level, reads as a
- * capital H at this size, which is how the first attempt at this went.
+ * It has to stay on the diagonal: two blocks joined by a bar, sitting level,
+ * reads as a capital H at this size. A hairline edge keeps a light icon from
+ * dissolving into a light browser tab.
  */
 export default function Icon() {
   return new ImageResponse(
@@ -21,17 +20,19 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: 8,
-          background: "#8a6b33",
+          borderRadius: 7,
+          background: "#fbf9f4",
+          border: "1px solid #ded5c4",
+          position: "relative",
         }}
       >
         <svg
-          width={27}
-          height={27}
+          width={25}
+          height={25}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#fbf9f4"
-          strokeWidth={3}
+          stroke="#8a6b33"
+          strokeWidth={3.2}
           strokeLinecap="round"
           strokeLinejoin="round"
         >

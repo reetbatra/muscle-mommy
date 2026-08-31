@@ -12,6 +12,7 @@ import { NextWorkoutCard, StepsCard } from "@/components/today/movement-card";
 import { CycleChip } from "@/components/today/cycle-chip";
 import { PagesRead } from "@/components/today/pages-read";
 import { WeekCard } from "@/components/today/week-card";
+import { Sparkle } from "@/components/ui/sparkle";
 
 export const metadata: Metadata = { title: "Today" };
 export const dynamic = "force-dynamic";
@@ -85,7 +86,10 @@ export default async function TodayPage() {
           <h1 className="font-display mt-2 text-[38px] leading-[1.05] text-ink">
             {greeting()},
           </h1>
-          <p className="hand mt-1.5 text-[32px] leading-none">{firstName}</p>
+          <p className="hand mt-1.5 flex items-center gap-2.5 text-[32px] leading-none">
+            {firstName}
+            <Sparkle size={14} twinkle />
+          </p>
         </div>
         <div className="pt-1">
           <CycleChip
@@ -132,7 +136,10 @@ export default async function TodayPage() {
             <h2 id="habits-heading" className="eyebrow">
               Habits
             </h2>
-            <span className="tnum text-[13px] text-ink-faint">
+            <span className="tnum flex items-center gap-1.5 text-[13px] text-ink-faint">
+              {habitsDone > 0 && habitsDone === data.habits.length ? (
+                <Sparkle size={12} twinkle />
+              ) : null}
               {habitsDone}/{data.habits.length}
             </span>
           </div>

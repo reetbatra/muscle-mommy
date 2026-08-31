@@ -14,7 +14,8 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#8a6b33",
+          background: "#fbf9f4",
+          position: "relative",
         }}
       >
         <svg
@@ -22,8 +23,8 @@ export default function AppleIcon() {
           height={104}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#fbf9f4"
-          strokeWidth={2.1}
+          stroke="#8a6b33"
+          strokeWidth={2.3}
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -32,6 +33,16 @@ export default function AppleIcon() {
           <path d="m21.5 21.5-1.4-1.4" />
           <path d="M3.9 3.9 2.5 2.5" />
           <path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z" />
+        </svg>
+        {/* A sparkle, tucked top right. */}
+        <svg
+          width={30}
+          height={30}
+          viewBox="0 0 24 24"
+          fill="#8a6b33"
+          style={{ position: "absolute", top: 26, right: 26 }}
+        >
+          <path d="M12 0c.9 5.7 5.4 10.2 11.1 11.1C17.4 12 12.9 16.5 12 22.2 11.1 16.5 6.6 12 .9 11.1 6.6 10.2 11.1 5.7 12 0Z" />
         </svg>
       </div>
     ),

@@ -1,4 +1,5 @@
 import { PrescriptionBadge } from "./prescription-badge";
+import { Sparkle } from "@/components/ui/sparkle";
 import type { Prescription } from "@/lib/domain/overload";
 import { trimNumber } from "@/lib/utils";
 
@@ -17,7 +18,10 @@ export function TargetRow({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-display text-base leading-tight font-semibold text-ink">{name}</h3>
-          <p className="mt-0.5 text-sm font-medium text-ink-soft">{prescription.headline}</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[15px] text-ink-soft">
+            {prescription.headline}
+            {prescription.status === "add-weight" ? <Sparkle size={12} twinkle /> : null}
+          </p>
         </div>
         <PrescriptionBadge status={prescription.status} />
       </div>
