@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateText, Output } from "ai";
+import { foodModel, hasFoodModel } from "@/lib/ai";
 import { createClient } from "@/lib/supabase/server";
 import { buildAnalysisPrompt, mealAnalysisSchema } from "@/lib/domain/food-schema";
 import { sumMeals } from "@/lib/domain/macros";
@@ -27,9 +28,9 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
 
-  if (!process.env.AI_GATEWAY_API_KEY && !process.env.VERCEL_OIDC_TOKEN) {
+  if (!hasFoodModel()) {
     return NextResponse.json(
-      { error: "Photo logging needs AI_GATEWAY_API_KEY to be set. Add a meal by hand instead." },
+      { error: "No food model is configured. Add a meal by hand instead." },
       { status: 503 },
     );
   }
@@ -92,7 +93,10 @@ export async function POST(request: Request) {
 
   const memories = (memoryRows ?? []).map(toMemory);
 
-  const userContent: ({ type: "text"; text: string } | { type: "image"; image: Uint8Array; mediaType: string })[] = [
+  const userContent: (
+    | { type: "text"; text: string }
+    | { type: "file"; data: Uint8Array; mediaType: string }
+  )[] = [
     {
       type: "text",
       text: hasPhoto
@@ -103,13 +107,13 @@ export async function POST(request: Request) {
     },
   ];
   if (hasPhoto && bytes) {
-    userContent.push({ type: "image", image: bytes, mediaType: (file as File).type });
+    userContent.push({ type: "file", data: bytes, mediaType: (file as File).type });
   }
 
   let analysis;
   try {
     const result = await generateText({
-      model: "anthropic/claude-sonnet-5",
+      model: foodModel(hasPhoto ? "vision" : "text"),
       output: Output.object({ schema: mealAnalysisSchema, name: "meal_analysis" }),
       system: buildAnalysisPrompt({
         memories: formatMemoriesForPrompt(memories),
