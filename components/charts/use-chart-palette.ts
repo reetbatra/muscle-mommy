@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 
 /**
  * Recharts writes colours as SVG presentation attributes, and those do not
- * resolve `var()`. So the tokens get read off the document once on mount and
- * again whenever the colour scheme changes, which keeps globals.css the single
- * source of truth without hardcoding hexes in two places.
+ * resolve `var()`. So the tokens are read off the document once on mount,
+ * which keeps globals.css the single source of truth without hardcoding hexes
+ * in two places. The app is light only, so there is nothing to watch for.
  */
 export type ChartPalette = {
   series1: string;
@@ -39,17 +39,6 @@ export function useChartPalette(): ChartPalette {
     };
 
     read();
-    const query = window.matchMedia("(prefers-color-scheme: dark)");
-    query.addEventListener("change", read);
-    const observer = new MutationObserver(read);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-    return () => {
-      query.removeEventListener("change", read);
-      observer.disconnect();
-    };
   }, []);
 
   return palette;

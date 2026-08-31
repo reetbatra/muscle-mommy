@@ -46,74 +46,10 @@
   --shadow-lift: 0 1px 2px rgb(26 23 19 / 0.06), 0 12px 28px -18px rgb(26 23 19 / 0.35);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-
-    --bg: #14110f;
-    --bg-tint: #191512;
-    --surface: #191512;
-    --surface-2: #211c17;
-    --surface-3: #2e2820;
-    --border: #2e2822;
-    --border-strong: #453d33;
-
-    --ink: #efe9df;
-    --ink-soft: #9a9086;
-    --ink-faint: #6e665e;
-
-    --accent: #c9a464;
-    --accent-soft: #a8863f;
-    --good: #a8b98f;
-    --warn: #d9b877;
-    --bad: #d98a80;
-
-    --ring: #c9a464;
-    --grid: rgb(239 233 223 / 0.045);
-
-    /* Stepped for the dark surface, not flipped: CVD delta E 22.4. */
-    --chart-1: #c08329;
-    --chart-2: #4886cc;
-    --chart-grid: #2e2822;
-    --chart-axis: #6e665e;
-
-    --shadow-soft: none;
-    --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.8);
-  }
-}
-
-[data-theme="dark"] {
-  color-scheme: dark;
-
-  --bg: #14110f;
-  --bg-tint: #191512;
-  --surface: #191512;
-  --surface-2: #211c17;
-  --surface-3: #2e2820;
-  --border: #2e2822;
-  --border-strong: #453d33;
-
-  --ink: #efe9df;
-  --ink-soft: #9a9086;
-  --ink-faint: #6e665e;
-
-  --accent: #c9a464;
-  --accent-soft: #a8863f;
-  --good: #a8b98f;
-  --warn: #d9b877;
-  --bad: #d98a80;
-
-  --ring: #c9a464;
-  --grid: rgb(239 233 223 / 0.045);
-
-  --chart-1: #c08329;
-  --chart-2: #4886cc;
-  --chart-grid: #2e2822;
-  --chart-axis: #6e665e;
-
-  --shadow-soft: none;
-  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.8);
-}
+/* Deliberately light only.
+   The paper ground is the design, and an automatic charcoal flip on a phone
+   set to dark mode is not a second theme, it is a different app. color-scheme
+   is pinned so the OS does not repaint form controls dark underneath it. */
 
 @theme inline {
   --color-bg: var(--bg);
