@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -15,7 +15,18 @@ export function LoginForm() {
   // leaving the user staring at an unchanged form.
   const callbackError = searchParams.get("error");
 
+  // Signing in should be a one-time thing. If the session ever does lapse,
+  // the address is already filled in so it is one tap to get back.
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    try {
+      const remembered = window.localStorage.getItem("mm:email");
+      if (remembered) setEmail(remembered);
+    } catch {
+      // Private browsing. Typing it again is the fallback.
+    }
+  }, []);
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +46,12 @@ export function LoginForm() {
       setStatus("idle");
       setError(signInError.message);
       return;
+    }
+
+    try {
+      window.localStorage.setItem("mm:email", email.trim());
+    } catch {
+      // Not important enough to fail the sign-in over.
     }
     setStatus("sent");
   }

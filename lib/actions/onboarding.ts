@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/supabase/server";
 import { addDaysISO, safeTimezone } from "@/lib/domain/dates";
 import { suggestCalorieTarget, suggestMaintenance, suggestProtein } from "@/lib/domain/macros";
 import { templateById } from "@/lib/domain/templates";
+import { cycleOffsets } from "@/lib/domain/schedule";
 
 const baselineSchema = z.object({
   /** Index into the template's flattened exercise list. */
@@ -28,6 +29,8 @@ const schema = z.object({
   calorieTarget: z.number().int().min(1000).max(6000).nullable().default(null),
   proteinG: z.number().int().min(20).max(400).nullable().default(null),
   templateId: z.string().min(1),
+  /** Index of the day just trained, so "next up" is right from the first open. */
+  lastCompletedDayIndex: z.number().int().min(0).max(7).nullable().default(null),
   baselines: z.array(baselineSchema).max(60).default([]),
 });
 
@@ -104,6 +107,9 @@ export async function completeOnboarding(input: OnboardingInput) {
     values.baselines.map((b) => [baselineKey(b.dayIndex, b.position), b]),
   );
 
+  const todayLocal = new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(new Date());
+  const dayOffsets = cycleOffsets(template.days, values.lastCompletedDayIndex);
+
   for (const [dayIndex, day] of template.days.entries()) {
     const { data: routineDay, error: dayError } = await supabase
       .from("routine_days")
@@ -161,10 +167,9 @@ export async function completeOnboarding(input: OnboardingInput) {
 
     if (seedSets.length === 0) continue;
 
-    const sessionDate = addDaysISO(
-      new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(new Date()),
-      -7 + dayIndex,
-    );
+    // Backdated so the split lands where the user actually is in the cycle,
+    // rather than all four days appearing to have happened last week.
+    const sessionDate = addDaysISO(todayLocal, dayOffsets.get(dayIndex) ?? -1);
 
     const { data: session, error: sessionError } = await supabase
       .from("workout_sessions")
@@ -194,3 +199,4 @@ export async function completeOnboarding(input: OnboardingInput) {
   revalidatePath("/", "layout");
   redirect("/today");
 }
+

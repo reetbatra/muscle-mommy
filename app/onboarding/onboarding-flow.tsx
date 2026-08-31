@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { FieldRow, Input, NumberStepper } from "@/components/ui/field";
+import { FieldRow, Input, NumberStepper, Select } from "@/components/ui/field";
 import { Segmented } from "@/components/ui/segmented";
 import { completeOnboarding } from "@/lib/actions/onboarding";
 import { suggestCalorieTarget, suggestMaintenance, suggestProtein } from "@/lib/domain/macros";
@@ -44,6 +44,7 @@ export function OnboardingFlow({ defaultName }: { defaultName: string }) {
   const template = templateById(templateId)!;
 
   const [baselines, setBaselines] = useState<Record<string, Baseline>>({});
+  const [lastDayIndex, setLastDayIndex] = useState<number | null>(null);
 
   function baselineFor(dayIndex: number, position: number): Baseline {
     const key = `${dayIndex}:${position}`;
@@ -78,6 +79,7 @@ export function OnboardingFlow({ defaultName }: { defaultName: string }) {
           calorieTarget,
           proteinG,
           templateId,
+          lastCompletedDayIndex: lastDayIndex,
           baselines: filled.filter((b) => b.reps.length > 0),
         });
       } catch (error) {
@@ -249,7 +251,10 @@ export function OnboardingFlow({ defaultName }: { defaultName: string }) {
               <button
                 key={option.id}
                 type="button"
-                onClick={() => setTemplateId(option.id)}
+                onClick={() => {
+                  setTemplateId(option.id);
+                  setLastDayIndex(null);
+                }}
                 aria-pressed={active}
                 className={cn(
                   "w-full cursor-pointer rounded-3xl border p-4 text-left transition-colors duration-200",
@@ -271,6 +276,32 @@ export function OnboardingFlow({ defaultName }: { defaultName: string }) {
               </button>
             );
           })}
+
+          {template.days.some((day) => day.exercises.length > 0) ? (
+            <div className="card mt-2 p-4">
+              <FieldRow
+                label="Which did you train most recently?"
+                htmlFor="last-day"
+                hint="Only used to work out what comes next. Leave it if you are starting fresh."
+              >
+                <Select
+                  id="last-day"
+                  value={lastDayIndex === null ? "" : String(lastDayIndex)}
+                  onChange={(e) =>
+                    setLastDayIndex(e.target.value === "" ? null : Number(e.target.value))
+                  }
+                >
+                  <option value="">Starting fresh</option>
+                  {template.days.map((day, index) => (
+                    <option key={day.name} value={index}>
+                      {day.name}
+                      {index === 0 ? "" : ""}
+                    </option>
+                  ))}
+                </Select>
+              </FieldRow>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

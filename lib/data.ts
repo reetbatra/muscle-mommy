@@ -14,6 +14,7 @@ import type {
   WorkoutSession,
 } from "@/lib/domain/types";
 import type { LoadConfig, LoadType, LoggedSet } from "@/lib/domain/overload";
+import { selectLatestSets, type HistoryRow } from "@/lib/domain/history";
 
 export type SessionContext = {
   userId: string;
@@ -93,12 +94,19 @@ export async function getRoutine(): Promise<RoutineDayFull[]> {
 }
 
 /**
- * The most recent finished session's working sets for each exercise, which is
- * everything the prescription engine needs as input.
+ * The most recent finished session's working sets for each exercise.
+ *
+ * `preferRoutineDayId` matters more than it looks. The same lift often appears
+ * on two days of a split at two different working weights: a hip thrust at
+ * 45kg on Lower A and 40kg on Lower B is one exercise with two honest
+ * histories. Comparing across them would read as a regression every other
+ * session and would prescribe the wrong weight. So the last session of the
+ * same day wins, and anything else is only a fallback for a lift with no
+ * history on this day yet.
  */
 export async function getLastSetsByExercise(
   exerciseIds: string[],
-  options: { excludeSessionId?: string } = {},
+  options: { excludeSessionId?: string; preferRoutineDayId?: string | null } = {},
 ): Promise<Record<string, LoggedSet[]>> {
   if (exerciseIds.length === 0) return {};
   const { supabase, user } = await requireUser();
@@ -106,7 +114,7 @@ export async function getLastSetsByExercise(
   const { data, error } = await supabase
     .from("workout_sets")
     .select(
-      "exercise_id, session_id, set_index, weight_kg, reps, is_warmup, session:workout_sessions(session_date, finished_at)",
+      "exercise_id, session_id, set_index, weight_kg, reps, is_warmup, session:workout_sessions(session_date, finished_at, routine_day_id)",
     )
     .eq("user_id", user.id)
     .in("exercise_id", exerciseIds)
@@ -122,38 +130,32 @@ export async function getLastSetsByExercise(
     weight_kg: number | string;
     reps: number;
     is_warmup: boolean;
-    session: { session_date: string; finished_at: string | null } | null;
+    session: {
+      session_date: string;
+      finished_at: string | null;
+      routine_day_id: string | null;
+    } | null;
   };
 
-  const latest = new Map<string, { date: string; sessionId: string; sets: LoggedSet[] }>();
-
-  for (const raw of (data ?? []) as unknown as Row[]) {
-    if (options.excludeSessionId && raw.session_id === options.excludeSessionId) continue;
-    // Unfinished sessions are abandoned or in progress. Neither is history.
-    if (!raw.session?.finished_at) continue;
-    const date = raw.session.session_date;
-
-    const current = latest.get(raw.exercise_id);
-    if (!current || date > current.date) {
-      latest.set(raw.exercise_id, { date, sessionId: raw.session_id, sets: [] });
-    }
-    const entry = latest.get(raw.exercise_id)!;
-    // A newer session wins outright; sets from older ones are dropped.
-    if (raw.session_id !== entry.sessionId) continue;
-    entry.sets.push({
-      weight_kg: Number(raw.weight_kg),
-      reps: raw.reps,
-      is_warmup: raw.is_warmup,
-      set_index: raw.set_index,
-    });
-  }
-
-  return Object.fromEntries(
-    [...latest.entries()].map(([exerciseId, entry]) => [
-      exerciseId,
-      entry.sets.sort((a, b) => a.set_index - b.set_index),
-    ]),
+  const rows: HistoryRow[] = ((data ?? []) as unknown as Row[]).flatMap((raw) =>
+    raw.session
+      ? [
+          {
+            exerciseId: raw.exercise_id,
+            sessionId: raw.session_id,
+            sessionDate: raw.session.session_date,
+            finishedAt: raw.session.finished_at,
+            routineDayId: raw.session.routine_day_id,
+            setIndex: raw.set_index,
+            weightKg: Number(raw.weight_kg),
+            reps: raw.reps,
+            isWarmup: raw.is_warmup,
+          },
+        ]
+      : [],
   );
+
+  return selectLatestSets(rows, options);
 }
 
 export type TodayData = {

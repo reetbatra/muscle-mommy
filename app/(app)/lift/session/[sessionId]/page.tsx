@@ -56,7 +56,10 @@ export default async function SessionPage({
   if (session.finished_at) {
     const exerciseIds = [...byExercise.keys()];
     const [previous, { data: exercises }] = await Promise.all([
-      getLastSetsByExercise(exerciseIds, { excludeSessionId: sessionId }),
+      getLastSetsByExercise(exerciseIds, {
+        excludeSessionId: sessionId,
+        preferRoutineDayId: session.routine_day_id,
+      }),
       supabase.from("exercises").select("id, name").in("id", exerciseIds.length ? exerciseIds : [""]),
     ]);
 

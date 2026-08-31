@@ -25,7 +25,8 @@ export function StrengthList({ exercises }: { exercises: ExerciseTrend[] }) {
         Every lift
       </h2>
       <p className="mt-0.5 text-sm text-ink-soft">
-        Working weight now, and how it changed since the session before.
+        Working weight now, and how it changed since the session before. A lift that appears on
+        two days is tracked separately for each.
       </p>
 
       <ul className="mt-4 divide-y divide-[var(--border)]">
@@ -40,7 +41,14 @@ export function StrengthList({ exercises }: { exercises: ExerciseTrend[] }) {
           return (
             <li key={exercise.id} className="flex items-center gap-3 py-2.5">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-ink">{exercise.name}</p>
+                <p className="truncate text-sm font-semibold text-ink">
+                  {exercise.name}
+                  {exercise.dayName ? (
+                    <span className="ml-1.5 rounded-full bg-surface-2 px-1.5 py-0.5 text-[10px] font-bold text-ink-faint">
+                      {exercise.dayName}
+                    </span>
+                  ) : null}
+                </p>
                 <p className="tnum text-xs text-ink-faint">
                   {exercise.sessions} {exercise.sessions === 1 ? "session" : "sessions"}
                   {exercise.sessions > 1 && Math.abs(e1rmChange) >= 1

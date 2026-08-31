@@ -28,7 +28,12 @@ export async function getDayPlan(
   if (!day) return null;
 
   const exerciseIds = day.routine_exercises.map((re) => re.exercise_id);
-  const history = await getLastSetsByExercise(exerciseIds, options);
+  // Scoped to this day, so a lift that appears on two days keeps two
+  // histories rather than averaging into one wrong number.
+  const history = await getLastSetsByExercise(exerciseIds, {
+    ...options,
+    preferRoutineDayId: day.id,
+  });
 
   return {
     day,

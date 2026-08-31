@@ -31,3 +31,38 @@ export function isRestDay<T extends ScheduleDay>(
   const last = days.find((d) => d.id === lastFinishedRoutineDayId);
   return Boolean(last?.rest_after);
 }
+
+/**
+ * How many days ago each training day was, walking backwards through the cycle
+ * from the one just completed. Rest days occupy a slot, so a split of
+ * "Upper A, Lower A, rest, Upper B, Lower B" spaces itself over five days
+ * rather than four.
+ */
+export function cycleOffsets(
+  days: { restAfter?: boolean }[],
+  lastCompletedDayIndex: number | null,
+): Map<number, number> {
+  const slots: { dayIndex: number | null }[] = [];
+  for (const [index, day] of days.entries()) {
+    slots.push({ dayIndex: index });
+    if (day.restAfter) slots.push({ dayIndex: null });
+  }
+  if (slots.length === 0) return new Map();
+
+  const requested =
+    lastCompletedDayIndex === null
+      ? -1
+      : slots.findIndex((slot) => slot.dayIndex === lastCompletedDayIndex);
+  // Nothing said, so treat the cycle as having just finished.
+  const anchor = requested >= 0 ? requested : slots.length - 1;
+
+  const offsets = new Map<number, number>();
+  for (const [position, slot] of slots.entries()) {
+    if (slot.dayIndex === null) continue;
+    const distance = (anchor - position + slots.length) % slots.length;
+    // Negating zero gives -0, which is a real value that compares unequal to 0
+    // and has no business ending up in a map of day offsets.
+    offsets.set(slot.dayIndex, distance === 0 ? 0 : -distance);
+  }
+  return offsets;
+}

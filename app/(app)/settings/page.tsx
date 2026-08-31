@@ -8,6 +8,7 @@ import {
   LogOut,
   Share,
   Target,
+  UserRound,
 } from "lucide-react";
 import { getSessionContext } from "@/lib/data";
 import { requireUser } from "@/lib/supabase/server";
@@ -132,12 +133,23 @@ export default async function SettingsPage() {
           Edit my split
         </Link>
 
-        <form action={signOut}>
-          <Button type="submit" variant="ghost" size="lg" block className="text-[var(--coral)]">
-            <LogOut className="size-4" aria-hidden />
-            Sign out
-          </Button>
-        </form>
+        <SettingsSection
+          icon={UserRound}
+          title="Account"
+          summary={ctx.email ?? "Signed in"}
+        >
+          <p className="text-sm leading-relaxed text-ink-soft">
+            You sign in once per device and the session keeps itself alive, so you should never
+            see the login screen again on this phone. Your data lives on a server rather than in
+            Safari, which is what stops it disappearing when the browser clears its storage.
+          </p>
+          <form action={signOut} className="mt-4">
+            <Button type="submit" variant="ghost" size="md" block className="text-[var(--coral)]">
+              <LogOut className="size-4" aria-hidden />
+              Sign out on this device
+            </Button>
+          </form>
+        </SettingsSection>
       </div>
     </Screen>
   );
