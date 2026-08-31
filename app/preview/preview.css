@@ -9,14 +9,16 @@
   line-height: 1.5;
 }
 
+/* Graph-paper grid, faint enough to feel like texture rather than a table. */
 .pv-grain::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.5;
-  background-image: radial-gradient(circle at 1px 1px, rgb(51 41 31 / 0.055) 1px, transparent 0);
-  background-size: 4px 4px;
+  background-image:
+    linear-gradient(to right, rgb(26 23 19 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(26 23 19 / 0.045) 1px, transparent 1px);
+  background-size: 26px 26px;
 }
 
 /* Numbers never get set in a serif with old-style figures, and never in the
@@ -128,4 +130,24 @@
 
 @media (prefers-reduced-motion: reduce) {
   .pv-btn { transition: none; }
+}
+
+/* globals.css sets a font on h1-h4 by element, which beats inheritance from
+   .pv and left every heading in the old rounded sans. Win it back explicitly,
+   and let the handwriting class beat that in turn. */
+.pv h1,
+.pv h2,
+.pv h3,
+.pv h4 {
+  font-family: var(--font-garamond), Georgia, serif;
+  letter-spacing: inherit;
+}
+
+.pv .pv-script {
+  font-family: var(--font-script), var(--font-garamond), cursive;
+}
+
+.pv .pv-num,
+.pv .pv-eyebrow {
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 }
