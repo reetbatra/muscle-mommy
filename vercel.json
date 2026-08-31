@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "//": "Functions run next to the database. Supabase is in ap-south-1, so every query from a US region was crossing the planet and back.",
   "regions": ["bom1"],
   "crons": [
     {
