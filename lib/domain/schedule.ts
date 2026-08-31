@@ -19,17 +19,41 @@ export function nextRoutineDay<T extends ScheduleDay>(
   return ordered[(lastIndex + 1) % ordered.length];
 }
 
-/** True when the split says to rest after the day just completed. */
-export function isRestDay<T extends ScheduleDay>(
+export type TodayState<T extends ScheduleDay> =
+  /** Already trained today. Nothing else is owed. */
+  | { kind: "done" }
+  /** Yesterday's day earns a rest, and today is it. */
+  | { kind: "rest" }
+  /** Whatever comes next in the split. */
+  | { kind: "next"; day: T | null };
+
+/**
+ * What today is.
+ *
+ * A rest day is the day *after* the session that earns it, not the remainder
+ * of the day you trained. Getting that backwards meant a split of "Lower A,
+ * rest, Upper B" showed rest on the Lower A evening and then jumped straight
+ * to Upper B the next morning, losing the rest day entirely.
+ */
+export function todayState<T extends ScheduleDay>(
   days: T[],
-  lastFinishedRoutineDayId: string | null,
-  lastFinishedDateISO: string | null,
+  lastFinished: { routineDayId: string | null; dateISO: string | null },
   todayISO: string,
-): boolean {
-  if (!lastFinishedRoutineDayId || !lastFinishedDateISO) return false;
-  if (lastFinishedDateISO !== todayISO) return false;
-  const last = days.find((d) => d.id === lastFinishedRoutineDayId);
-  return Boolean(last?.rest_after);
+): TodayState<T> {
+  const { routineDayId, dateISO } = lastFinished;
+
+  if (dateISO && dateISO === todayISO) return { kind: "done" };
+
+  if (routineDayId && dateISO && daysApart(dateISO, todayISO) === 1) {
+    const last = days.find((d) => d.id === routineDayId);
+    if (last?.rest_after) return { kind: "rest" };
+  }
+
+  return { kind: "next", day: nextRoutineDay(days, routineDayId) };
+}
+
+function daysApart(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 }
 
 /**

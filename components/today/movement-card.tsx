@@ -75,12 +75,12 @@ export function StepsCard({
 export function NextWorkoutCard({
   day,
   openSessionId,
-  restToday,
+  state,
   exerciseCount,
 }: {
   day: { id: string; name: string; subtitle: string | null } | null;
   openSessionId: string | null;
-  restToday: boolean;
+  state: "done" | "rest" | "next";
   exerciseCount: number;
 }) {
   if (openSessionId) {
@@ -101,16 +101,25 @@ export function NextWorkoutCard({
     );
   }
 
-  if (restToday) {
+  if (state === "done") {
     return (
-      <section className="card flex items-center gap-4 p-5">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-[2px] bg-surface-2 text-[var(--lilac-deep)]">
-          <Bed className="size-6" aria-hidden />
-        </div>
-        <div>
-          <h2 className="font-display text-lg font-semibold text-ink">Rest day</h2>
-          <p className="mt-0.5 text-[15px] text-ink-soft">Walk, eat, sleep.</p>
-        </div>
+      <section className="card">
+        <p className="eyebrow">Today</p>
+        <h2 className="font-display mt-2 text-[30px] leading-tight text-ink">Done</h2>
+        <p className="hand mt-2 text-[20px]">that is the work</p>
+      </section>
+    );
+  }
+
+  if (state === "rest") {
+    return (
+      <section className="card">
+        <p className="eyebrow">Today</p>
+        <h2 className="font-display mt-2 flex items-center gap-3 text-[30px] leading-tight text-ink">
+          <Bed className="size-6 text-[var(--accent)]" aria-hidden />
+          Rest
+        </h2>
+        <p className="mt-2 text-[15px] text-ink-soft">Walk, eat, sleep.</p>
       </section>
     );
   }

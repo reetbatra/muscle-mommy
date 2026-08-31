@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { selectLatestSets, type HistoryRow } from "../history";
-import { cycleOffsets } from "../schedule";
+import { cycleOffsets, todayState } from "../schedule";
 import { prescribe, DEFAULT_LOAD_CONFIG } from "../overload";
 
 /**
@@ -159,5 +159,49 @@ describe("cycleOffsets", () => {
 
   it("copes with an empty split", () => {
     expect(cycleOffsets([], null).size).toBe(0);
+  });
+});
+
+describe("todayState", () => {
+  const days = [
+    { id: "ua", day_index: 1, rest_after: false },
+    { id: "la", day_index: 2, rest_after: true },
+    { id: "ub", day_index: 3, rest_after: false },
+    { id: "lb", day_index: 4, rest_after: false },
+  ];
+
+  it("says done when you already trained today", () => {
+    expect(todayState(days, { routineDayId: "la", dateISO: "2026-08-31" }, "2026-08-31")).toEqual({
+      kind: "done",
+    });
+  });
+
+  it("puts the rest day after the session that earns it, not on it", () => {
+    // Lower A on the 30th, so the 31st is the rest day and the 1st is Upper B.
+    expect(todayState(days, { routineDayId: "la", dateISO: "2026-08-30" }, "2026-08-31")).toEqual({
+      kind: "rest",
+    });
+    expect(
+      todayState(days, { routineDayId: "la", dateISO: "2026-08-30" }, "2026-09-01"),
+    ).toMatchObject({ kind: "next", day: { id: "ub" } });
+  });
+
+  it("does not rest after a day that earns no rest", () => {
+    expect(
+      todayState(days, { routineDayId: "ua", dateISO: "2026-08-30" }, "2026-08-31"),
+    ).toMatchObject({ kind: "next", day: { id: "la" } });
+  });
+
+  it("stops resting once the rest day has passed", () => {
+    expect(
+      todayState(days, { routineDayId: "la", dateISO: "2026-08-25" }, "2026-08-31"),
+    ).toMatchObject({ kind: "next", day: { id: "ub" } });
+  });
+
+  it("starts at day one with no history", () => {
+    expect(todayState(days, { routineDayId: null, dateISO: null }, "2026-08-31")).toMatchObject({
+      kind: "next",
+      day: { id: "ua" },
+    });
   });
 });

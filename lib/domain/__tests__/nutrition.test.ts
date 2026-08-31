@@ -10,7 +10,7 @@ import {
 import { dayCompletion, streakLength } from "../habits";
 import { averageCycleLength, cycleDayFor, derivePeriodStarts, phaseFor } from "../cycle";
 import { addDaysISO, daysBetweenISO, isoRange, prettyDate } from "../dates";
-import { isRestDay, nextRoutineDay } from "../schedule";
+import { nextRoutineDay } from "../schedule";
 
 describe("sumMeals", () => {
   it("adds up a day of eating", () => {
@@ -197,11 +197,7 @@ describe("nextRoutineDay", () => {
     expect(nextRoutineDay(days, "gone")?.id).toBe("a");
   });
 
-  it("only calls it a rest day right after the day that earns one", () => {
-    expect(isRestDay(days, "b", "2026-08-31", "2026-08-31")).toBe(true);
-    expect(isRestDay(days, "a", "2026-08-31", "2026-08-31")).toBe(false);
-    expect(isRestDay(days, "b", "2026-08-30", "2026-08-31")).toBe(false);
-  });
+  // Rest-day timing now lives in todayState, covered in history.test.ts.
 });
 
 describe("energyBalance with Apple Health resting energy", () => {

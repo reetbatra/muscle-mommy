@@ -3,7 +3,7 @@ import { getRoutine, getSessionContext, getTodayData } from "@/lib/data";
 import { addDaysISO } from "@/lib/domain/dates";
 import { energyBalance, macroLines, sumMeals } from "@/lib/domain/macros";
 import { averageCycleLength, cycleDayFor, derivePeriodStarts, phaseFor } from "@/lib/domain/cycle";
-import { isRestDay, nextRoutineDay } from "@/lib/domain/schedule";
+import { todayState } from "@/lib/domain/schedule";
 import { Screen } from "@/components/screen";
 import { HabitGrid } from "@/components/today/habit-grid";
 import { EnergyCard } from "@/components/today/energy-card";
@@ -47,15 +47,16 @@ export default async function TodayPage() {
     day_index: d.day_index,
     rest_after: d.rest_after,
   }));
-  const lastRoutineDayId = data.lastFinishedSession?.routine_day_id ?? null;
-  const upcoming = nextRoutineDay(scheduleDays, lastRoutineDayId);
-  const upcomingFull = routine.find((d) => d.id === upcoming?.id) ?? null;
-  const restToday = isRestDay(
+  const state = todayState(
     scheduleDays,
-    lastRoutineDayId,
-    data.lastFinishedSession?.session_date ?? null,
+    {
+      routineDayId: data.lastFinishedSession?.routine_day_id ?? null,
+      dateISO: data.lastFinishedSession?.session_date ?? null,
+    },
     ctx.today,
   );
+  const upcomingFull =
+    state.kind === "next" ? (routine.find((d) => d.id === state.day?.id) ?? null) : null;
 
   const history = Object.fromEntries(
     Object.entries(data.habitHistory).map(([id, dates]) => [id, [...dates]]),
@@ -91,7 +92,7 @@ export default async function TodayPage() {
         <NextWorkoutCard
           day={upcomingFull}
           openSessionId={data.openSession?.id ?? null}
-          restToday={restToday}
+          state={state.kind}
           exerciseCount={upcomingFull?.routine_exercises.length ?? 0}
         />
 
