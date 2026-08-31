@@ -11,15 +11,17 @@ import { useEffect, useState } from "react";
 export type ChartPalette = {
   series1: string;
   series2: string;
+  series3: string;
   grid: string;
   axis: string;
 };
 
 const FALLBACK: ChartPalette = {
-  series1: "#db2777",
-  series2: "#2a78d6",
-  grid: "#f3dcea",
-  axis: "#9b7d99",
+  series1: "#a85f1b",
+  series2: "#2a6fc4",
+  series3: "#3f7d33",
+  grid: "#e8e1d4",
+  axis: "#9c9184",
 };
 
 export function useChartPalette(): ChartPalette {
@@ -33,6 +35,7 @@ export function useChartPalette(): ChartPalette {
       setPalette({
         series1: get("--chart-1", FALLBACK.series1),
         series2: get("--chart-2", FALLBACK.series2),
+        series3: get("--chart-3", FALLBACK.series3),
         grid: get("--chart-grid", FALLBACK.grid),
         axis: get("--chart-axis", FALLBACK.axis),
       });

@@ -39,6 +39,9 @@
      both marks over 3:1. Re-run the validator before changing either. */
   --chart-1: #a85f1b;
   --chart-2: #2a6fc4;
+  /* Third slot for the macro split. Validated on adjacent pairs, which is
+     what a stacked bar needs: CVD delta E 22.6, normal-vision 23.2. */
+  --chart-3: #3f7d33;
   --chart-grid: #e8e1d4;
   --chart-axis: #9c9184;
 

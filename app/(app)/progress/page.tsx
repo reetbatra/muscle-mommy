@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getSessionContext } from "@/lib/data";
 import { getProgressData } from "@/lib/progress";
+import { getReport } from "@/lib/report";
 import { Screen, ScreenHeader } from "@/components/screen";
 import {
   BodyCompChart,
@@ -11,13 +12,18 @@ import {
 } from "@/components/charts/progress-charts";
 import { StrengthList } from "@/components/charts/strength-list";
 import { BodyCompSheet } from "@/components/charts/body-comp-sheet";
+import { ReportView } from "@/components/charts/report-view";
 
 export const metadata: Metadata = { title: "Progress" };
 export const dynamic = "force-dynamic";
 
 export default async function ProgressPage() {
   const ctx = await getSessionContext();
-  const data = await getProgressData(ctx.today, ctx.goals.maintenance_kcal);
+  const [data, week, month] = await Promise.all([
+    getProgressData(ctx.today, ctx.goals.maintenance_kcal),
+    getReport("week", ctx.today, ctx.goals.maintenance_kcal),
+    getReport("month", ctx.today, ctx.goals.maintenance_kcal),
+  ]);
 
   const habitDays = data.habitRate.filter((d) => d.ratio > 0).length;
   const habitAverage =
@@ -30,12 +36,15 @@ export default async function ProgressPage() {
   return (
     <Screen>
       <ScreenHeader
-        eyebrow="Last 90 days"
+        eyebrow="Report"
         title="Progress"
         action={<BodyCompSheet today={ctx.today} latest={data.bodyComps.at(-1) ?? null} />}
       />
 
-      <div className="space-y-4">
+      <ReportView week={week} month={month} />
+
+      <div className="mt-10 space-y-4">
+        <p className="eyebrow">Longer view</p>
         <OverloadChart sessions={data.sessions} />
         <StrengthList exercises={data.exercises} />
         <WeightChart
