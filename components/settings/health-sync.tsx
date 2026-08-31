@@ -9,14 +9,15 @@ import { createIngestToken, revokeIngestToken } from "@/lib/actions/settings";
 import type { IngestToken } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
 
+/** The four marked essential are the ones the deficit and step ring run on. */
 const HEALTH_FIELDS = [
-  ["steps", "Steps", "Sum"],
-  ["active_kcal", "Active Energy", "Sum"],
-  ["basal_kcal", "Resting Energy", "Sum"],
-  ["exercise_minutes", "Exercise Minutes", "Sum"],
-  ["sleep_minutes", "Sleep, in minutes", "Sum"],
-  ["weight_kg", "Weight, in kg", "Latest"],
-  ["resting_hr", "Resting Heart Rate", "Average"],
+  ["steps", "Steps", "Sum", true],
+  ["active_kcal", "Active Energy", "Sum", true],
+  ["basal_kcal", "Resting Energy", "Sum", true],
+  ["weight_kg", "Weight", "Latest", true],
+  ["exercise_minutes", "Exercise Minutes", "Sum", false],
+  ["sleep_minutes", "Sleep", "Sum", false],
+  ["resting_hr", "Resting Heart Rate", "Average", false],
 ] as const;
 
 export function HealthSync({
@@ -127,16 +128,22 @@ export function HealthSync({
                 Add a <strong className="text-ink">Find Health Samples Where</strong> action for
                 each thing you want, set the date to Today, and pick the right calculation:
                 <ul className="tnum mt-2 space-y-1 rounded-xl bg-surface-2 p-3 text-xs">
-                  {HEALTH_FIELDS.map(([key, sample, calc]) => (
+                  {HEALTH_FIELDS.map(([key, sample, calc, essential]) => (
                     <li key={key} className="flex justify-between gap-3">
-                      <span className="font-semibold text-ink">{sample}</span>
+                      <span className="font-semibold text-ink">
+                        {sample}
+                        {essential ? null : (
+                          <span className="ml-1.5 font-normal text-ink-faint">optional</span>
+                        )}
+                      </span>
                       <span className="text-ink-faint">
                         {calc} → {key}
                       </span>
                     </li>
                   ))}
                 </ul>
-                Skip any you do not care about. Everything except the date is optional.
+                The first four are what the deficit and the step ring run on. The rest are extra.
+                Everything except the date is optional.
               </Step>
               <Step n={3}>
                 Add a <strong className="text-ink">Get Contents of URL</strong> action pointed at

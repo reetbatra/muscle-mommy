@@ -287,8 +287,10 @@ export const PROGRAM_TEMPLATES: ProgramTemplate[] = [
             repHigh: 12,
             loadType: "machine",
             restSeconds: 120,
-            startingWeightKg: 40,
-            startingReps: [15, 15, 15],
+            // Same 45kg as Lower A. No reps seeded here on purpose: the 15s
+            // were done at 40kg and say nothing about 45kg, so this day falls
+            // back to the Lower A history until it has its own.
+            startingWeightKg: 45,
           },
           {
             exercise: "Seated Leg Curl",

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hashToken } from "@/lib/tokens";
+import { parseHealthNumber } from "@/lib/domain/numbers";
 
 /**
  * The Apple Health bridge.
@@ -12,10 +13,7 @@ import { hashToken } from "@/lib/tokens";
  * why it uses the service-role client deliberately rather than a session.
  */
 
-const numberish = z.union([z.number(), z.string()]).transform((v) => {
-  const n = typeof v === "string" ? Number(v.trim()) : v;
-  return Number.isFinite(n) ? n : null;
-});
+const numberish = z.union([z.number(), z.string()]).transform(parseHealthNumber);
 
 const daySchema = z.object({
   date: z.iso.date(),
