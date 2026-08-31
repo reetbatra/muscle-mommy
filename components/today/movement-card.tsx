@@ -36,18 +36,17 @@ export function StepsCard({
           Movement
         </h2>
         {steps === null ? (
-          <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-            Nothing from Apple Health yet today. Set up the Shortcut once in{" "}
-            <Link href="/settings" className="font-semibold text-[var(--pink-deep)] underline">
-              settings
-            </Link>{" "}
-            and this fills itself in every morning.
+          <p className="mt-1 text-[15px] text-ink-soft">
+            Not synced.{" "}
+            <Link href="/settings" className="text-[var(--accent)] underline">
+              Connect Health
+            </Link>
           </p>
         ) : (
-          <p className="mt-1 text-sm text-ink-soft">
+          <p className="tnum mt-1 text-[15px] text-ink-soft">
             {steps >= target
-              ? `Past your ${target.toLocaleString()} step goal.`
-              : `${(target - steps).toLocaleString()} steps to go.`}
+              ? "Goal met"
+              : `${(target - steps).toLocaleString()} to go`}
           </p>
         )}
 
@@ -88,14 +87,14 @@ export function NextWorkoutCard({
     return (
       <Link
         href={`/lift/session/${openSessionId}`}
-        className="glitter-fill shimmer block cursor-pointer rounded-3xl p-5 text-white shadow-[0_12px_30px_-12px_rgb(219_39_119/0.65)]"
+        className="glitter-fill shimmer block cursor-pointer rounded-[2px] p-5 text-white shadow-[0_12px_30px_-12px_rgb(219_39_119/0.65)]"
       >
         <p className="text-xs font-bold tracking-[0.14em] uppercase opacity-90">In progress</p>
         <p className="font-display mt-1.5 text-2xl leading-tight font-bold">
           Finish your session
         </p>
-        <p className="mt-1 flex items-center gap-1 text-sm opacity-90">
-          Pick up where you left off
+        <p className="mt-1 flex items-center gap-1 text-[15px] opacity-90">
+          Continue
           <ChevronRight className="size-4" aria-hidden />
         </p>
       </Link>
@@ -105,14 +104,12 @@ export function NextWorkoutCard({
   if (restToday) {
     return (
       <section className="card flex items-center gap-4 p-5">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-surface-2 text-[var(--lilac-deep)]">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-[2px] bg-surface-2 text-[var(--lilac-deep)]">
           <Bed className="size-6" aria-hidden />
         </div>
         <div>
           <h2 className="font-display text-lg font-semibold text-ink">Rest day</h2>
-          <p className="mt-0.5 text-sm text-ink-soft">
-            Your split says rest after today. Walk, eat, sleep. That is the work.
-          </p>
+          <p className="mt-0.5 text-[15px] text-ink-soft">Walk, eat, sleep.</p>
         </div>
       </section>
     );
@@ -138,7 +135,7 @@ export function NextWorkoutCard({
   return (
     <section className="card p-5" aria-labelledby="next-workout-heading">
       <div className="flex items-start gap-4">
-        <div className="glitter-fill flex size-12 shrink-0 items-center justify-center rounded-2xl text-white">
+        <div className="glitter-fill flex size-12 shrink-0 items-center justify-center rounded-[2px] text-white">
           <Dumbbell className="size-6" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
@@ -149,9 +146,8 @@ export function NextWorkoutCard({
           >
             {day.name}
           </h2>
-          <p className="mt-0.5 text-sm text-ink-soft">
-            {day.subtitle ? `${day.subtitle} · ` : ""}
-            {exerciseCount} {exerciseCount === 1 ? "exercise" : "exercises"}
+          <p className="tnum mt-1 text-[15px] text-ink-faint">
+            {exerciseCount} {exerciseCount === 1 ? "lift" : "lifts"}
           </p>
         </div>
       </div>
@@ -161,7 +157,7 @@ export function NextWorkoutCard({
         className={cn(buttonVariants({ variant: "glitter", size: "lg", block: true }), "mt-4")}
       >
         <Play className="size-4" aria-hidden />
-        See today&rsquo;s targets
+        Start
       </Link>
     </section>
   );

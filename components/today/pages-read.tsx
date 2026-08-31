@@ -34,7 +34,7 @@ export function PagesRead({
     <section className="card p-5" aria-labelledby="pages-heading">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-surface-2 text-[var(--pink-deep)]">
+          <div className="flex size-10 items-center justify-center rounded-[2px] bg-surface-2 text-[var(--pink-deep)]">
             <BookOpen className="size-5" aria-hidden />
           </div>
           <div>

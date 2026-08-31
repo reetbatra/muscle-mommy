@@ -70,12 +70,11 @@ export default async function TodayPage() {
     <Screen>
       <header className="flex items-start justify-between gap-3 pt-6 pb-5">
         <div className="min-w-0">
-          <p className="text-xs font-semibold tracking-[0.14em] text-ink-faint uppercase">
-            {formatToday(ctx.today, ctx.profile.timezone)}
-          </p>
-          <h1 className="font-display mt-1 text-[27px] leading-tight font-semibold text-ink">
-            {greeting()}, <span className="glitter-text">{firstName}</span>
+          <p className="eyebrow">{formatToday(ctx.today, ctx.profile.timezone)}</p>
+          <h1 className="font-display mt-2 text-[38px] leading-[1.05] text-ink">
+            {greeting()},
           </h1>
+          <p className="hand mt-1.5 text-[32px] leading-none">{firstName}</p>
         </div>
         <div className="pt-1">
           <CycleChip
@@ -116,11 +115,11 @@ export default async function TodayPage() {
         />
 
         <section aria-labelledby="habits-heading" className="pt-2">
-          <div className="mb-3 flex items-baseline justify-between gap-3 px-1">
-            <h2 id="habits-heading" className="font-display text-lg font-semibold text-ink">
-              Daily habits
+          <div className="mb-2 flex items-baseline justify-between gap-3">
+            <h2 id="habits-heading" className="eyebrow">
+              Habits
             </h2>
-            <span className="tnum text-sm font-bold text-ink-soft">
+            <span className="tnum text-[13px] text-ink-faint">
               {habitsDone}/{data.habits.length}
             </span>
           </div>

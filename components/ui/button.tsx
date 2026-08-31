@@ -4,27 +4,30 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const button = cva(
-  "relative inline-flex items-center justify-center gap-2 rounded-full font-semibold " +
-    "transition-[transform,background-color,color,box-shadow,opacity] duration-200 " +
-    "cursor-pointer select-none active:scale-[0.97] " +
-    "disabled:pointer-events-none disabled:opacity-50",
+  "relative inline-flex items-center justify-center gap-2 rounded-[2px] font-normal " +
+    "font-[family-name:var(--font-display)] " +
+    "transition-[background-color,color,border-color,opacity] duration-200 " +
+    "cursor-pointer select-none " +
+    "disabled:pointer-events-none disabled:opacity-45",
   {
     variants: {
       variant: {
-        // The showy one. White on a saturated gradient, used sparingly.
+        // The primary action. Outlined bronze, filled on press, because
+        // nothing in this design shouts by default.
         glitter:
-          "text-white shadow-[0_8px_24px_-8px_rgb(219_39_119/0.55)] glitter-fill hover:brightness-105",
-        solid: "bg-[var(--pink-deep)] text-white hover:brightness-110",
-        lilac: "bg-[var(--lilac-deep)] text-white hover:brightness-110",
-        soft: "bg-surface-2 text-ink border border-line hover:bg-surface-3",
-        outline: "border-2 border-line-strong text-ink hover:bg-surface-2",
-        ghost: "text-ink-soft hover:bg-surface-2 hover:text-ink",
-        danger: "bg-[var(--coral)] text-white hover:brightness-110",
+          "border border-[var(--accent)] text-[var(--accent)] bg-transparent " +
+          "hover:bg-[var(--accent)] hover:text-[var(--bg)] active:bg-[var(--accent)] active:text-[var(--bg)]",
+        solid: "bg-[var(--accent)] text-[var(--bg)] hover:opacity-90",
+        lilac: "bg-[var(--accent-soft)] text-[var(--bg)] hover:opacity-90",
+        soft: "border border-line bg-surface-2 text-ink hover:border-line-strong",
+        outline: "border border-line-strong text-ink hover:bg-surface-2",
+        ghost: "text-ink-soft hover:text-ink",
+        danger: "border border-[var(--bad)] text-[var(--bad)] hover:bg-[var(--bad)] hover:text-[var(--bg)]",
       },
       size: {
-        sm: "h-10 px-4 text-sm",
-        md: "h-12 px-5 text-[15px]",
-        lg: "h-14 px-7 text-base",
+        sm: "h-10 px-4 text-[15px]",
+        md: "h-12 px-5 text-base",
+        lg: "h-13 px-7 text-[17px]",
         icon: "h-11 w-11",
         iconLg: "h-14 w-14",
       },

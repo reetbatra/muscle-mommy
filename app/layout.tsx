@@ -1,20 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka, Plus_Jakarta_Sans } from "next/font/google";
+import { EB_Garamond, Homemade_Apple, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { ServiceWorker } from "@/components/service-worker";
 import "./globals.css";
 
-const fredoka = Fredoka({
+const garamond = EB_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-fredoka",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-garamond",
   display: "swap",
 });
 
+/** Numbers only. Garamond's old-style figures will not line up in a column. */
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
   variable: "--font-jakarta",
+  display: "swap",
+});
+
+/** Decoration only. One weight, no tabular figures, unreadable under 19px. */
+const script = Homemade_Apple({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-script",
   display: "swap",
 });
 
@@ -42,14 +52,14 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fff6fb" },
-    { media: "(prefers-color-scheme: dark)", color: "#140816" },
+    { media: "(prefers-color-scheme: light)", color: "#fbf9f4" },
+    { media: "(prefers-color-scheme: dark)", color: "#14110f" },
   ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fredoka.variable} ${jakarta.variable}`}>
+    <html lang="en" className={`${garamond.variable} ${jakarta.variable} ${script.variable}`}>
       <body className="antialiased">
         {children}
         <ServiceWorker />
@@ -61,8 +71,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               background: "var(--surface)",
               color: "var(--ink)",
               border: "1px solid var(--border)",
-              borderRadius: "1rem",
-              fontFamily: "var(--font-jakarta)",
+              borderRadius: "2px",
+              fontFamily: "var(--font-garamond)",
             },
           }}
         />

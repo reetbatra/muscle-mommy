@@ -30,7 +30,7 @@ export function SettingsSection({
         aria-controls={panelId}
         className="flex w-full cursor-pointer items-center gap-3 p-4 text-left transition-colors duration-150 hover:bg-surface-2"
       >
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[var(--pink-deep)]">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-[2px] bg-surface-2 text-[var(--pink-deep)]">
           <Icon className="size-5" aria-hidden />
         </span>
         <span className="min-w-0 flex-1">

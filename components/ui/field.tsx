@@ -14,7 +14,7 @@ export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLab
 }
 
 const fieldBase =
-  "w-full rounded-2xl border border-line bg-surface px-4 text-base text-ink " +
+  "w-full rounded-[2px] border border-line bg-surface px-4 text-base text-ink " +
   "placeholder:text-ink-faint transition-colors duration-200 " +
   "focus:border-[var(--ring)] focus:outline-none disabled:opacity-60";
 

@@ -280,14 +280,14 @@ function ExerciseCard({
       <button
         type="button"
         onClick={() => setExtraSets((n) => n + 1)}
-        className="mt-3 flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-dashed border-line-strong text-sm font-semibold text-ink-soft transition-colors duration-200 hover:bg-surface-2 hover:text-ink"
+        className="mt-3 flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[2px] border border-dashed border-line-strong text-sm font-semibold text-ink-soft transition-colors duration-200 hover:bg-surface-2 hover:text-ink"
       >
         <Plus className="size-4" aria-hidden />
         Add a set
       </button>
 
       {block.notes ? (
-        <p className="mt-3 rounded-xl bg-surface-2 px-3 py-2 text-xs text-ink-soft">{block.notes}</p>
+        <p className="mt-3 rounded-[2px] bg-surface-2 px-3 py-2 text-xs text-ink-soft">{block.notes}</p>
       ) : null}
     </section>
   );
@@ -362,11 +362,11 @@ function SetRow({
   return (
     <li
       className={cn(
-        "flex items-center gap-2 rounded-2xl border p-2 transition-colors duration-200",
+        "flex items-center gap-2 rounded-[2px] border p-2 transition-colors duration-200",
         done ? "border-[var(--mint)] bg-surface-2" : "border-line bg-surface",
       )}
     >
-      <span className="tnum flex size-8 shrink-0 items-center justify-center rounded-lg bg-surface-2 text-xs font-bold text-ink-faint">
+      <span className="tnum flex size-8 shrink-0 items-center justify-center rounded-[2px] bg-surface-2 text-xs font-bold text-ink-faint">
         {setIndex}
       </span>
 
@@ -451,7 +451,7 @@ function RestTimer({
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-x-4 bottom-28 z-40 mx-auto flex max-w-lg items-center gap-3 rounded-2xl border border-line bg-surface/95 px-4 py-3 shadow-[var(--shadow-lift)] backdrop-blur-xl"
+      className="fixed inset-x-4 bottom-28 z-40 mx-auto flex max-w-lg items-center gap-3 rounded-[2px] border border-line bg-surface/95 px-4 py-3 shadow-[var(--shadow-lift)] backdrop-blur-xl"
     >
       <Timer className="size-4 shrink-0 text-[var(--pink-deep)]" aria-hidden />
       <p className="min-w-0 flex-1 text-sm font-semibold text-ink">

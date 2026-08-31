@@ -3,123 +3,116 @@
 /* ---------------------------------------------------------------------------
    Muscle Mommy design tokens
 
-   Semantic variables flip with the colour scheme, so components almost never
-   need a `dark:` variant. Decorative pinks are separate from the pinks used
-   behind white text, because the pretty one fails contrast and the other does
-   not.
+   Garamond for anything you read, a neutral sans for every number, and
+   handwriting strictly as decoration. Warm paper by default, warm charcoal at
+   night. One bronze accent, which marks what changed rather than decorating.
+
+   The rule of the palette: nothing shouts. What earns colour is a number that
+   moved.
 --------------------------------------------------------------------------- */
 
 :root {
   color-scheme: light;
 
-  --bg: #fff6fb;
-  --bg-tint: #ffeaf6;
-  --surface: #ffffff;
-  --surface-2: #fdf2f8;
-  --surface-3: #fbe8f3;
-  --border: #f6d8ea;
-  --border-strong: #eebcd9;
+  --bg: #fbf9f4;
+  --bg-tint: #f6f2e9;
+  --surface: #fdfcf9;
+  --surface-2: #f3efe5;
+  --surface-3: #eae3d6;
+  --border: #e5ded2;
+  --border-strong: #d3c9b8;
 
-  --ink: #3b0b33;
-  --ink-soft: #6b4a6a;
-  --ink-faint: #9b7d99;
+  --ink: #1a1713;
+  --ink-soft: #6e655b;
+  --ink-faint: #9c9184;
 
-  --pink: #ec4899;
-  --pink-deep: #db2777;
-  --lilac: #a855f7;
-  --lilac-deep: #7e22ce;
-  --cyan: #06b6d4;
-  --mint: #10b981;
-  --gold: #d97706;
-  --coral: #f43f5e;
+  --accent: #8a6b33;
+  --accent-soft: #b08b4a;
+  --good: #4f6b45;
+  --warn: #9a6b2f;
+  --bad: #9c3a32;
 
-  --ring: #f472b6;
+  --ring: #8a6b33;
+  --grid: rgb(26 23 19 / 0.045);
 
-  /* Chart series. Validated against a #ffffff chart surface: CVD delta E 15.9,
-     normal-vision 30.4, both marks over 3:1 contrast. Do not eyeball a
-     replacement, re-run the validator. */
-  --chart-1: #db2777;
-  --chart-2: #2a78d6;
-  --chart-grid: #f3dcea;
-  --chart-axis: #9b7d99;
+  /* Validated against this surface: CVD delta E 24.2, normal-vision 26.9,
+     both marks over 3:1. Re-run the validator before changing either. */
+  --chart-1: #a85f1b;
+  --chart-2: #2a6fc4;
+  --chart-grid: #e8e1d4;
+  --chart-axis: #9c9184;
 
-  --shadow-soft: 0 1px 2px rgb(219 39 119 / 0.06), 0 8px 24px -12px rgb(219 39 119 / 0.28);
-  --shadow-lift: 0 2px 4px rgb(219 39 119 / 0.08), 0 18px 40px -18px rgb(219 39 119 / 0.36);
-  --glitter: linear-gradient(115deg, #f472b6 0%, #c084fc 46%, #67e8f9 100%);
+  --shadow-soft: none;
+  --shadow-lift: 0 1px 2px rgb(26 23 19 / 0.06), 0 12px 28px -18px rgb(26 23 19 / 0.35);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --bg: #140816;
-    --bg-tint: #1b0b20;
-    --surface: #1f0f26;
-    --surface-2: #2a1531;
-    --surface-3: #351b3e;
-    --border: #3d2247;
-    --border-strong: #55305f;
+    --bg: #14110f;
+    --bg-tint: #191512;
+    --surface: #191512;
+    --surface-2: #211c17;
+    --surface-3: #2e2820;
+    --border: #2e2822;
+    --border-strong: #453d33;
 
-    --ink: #fdf2f8;
-    --ink-soft: #d6b6d8;
-    --ink-faint: #a382a8;
+    --ink: #efe9df;
+    --ink-soft: #9a9086;
+    --ink-faint: #6e665e;
 
-    --pink: #f9a8d4;
-    --pink-deep: #f472b6;
-    --lilac: #d8b4fe;
-    --lilac-deep: #c084fc;
-    --cyan: #67e8f9;
-    --mint: #6ee7b7;
-    --gold: #fcd34d;
-    --coral: #fda4af;
+    --accent: #c9a464;
+    --accent-soft: #a8863f;
+    --good: #a8b98f;
+    --warn: #d9b877;
+    --bad: #d98a80;
 
-    --ring: #f9a8d4;
+    --ring: #c9a464;
+    --grid: rgb(239 233 223 / 0.045);
 
-    /* Stepped for the dark surface rather than flipped: both sit in the
-       0.48-0.67 lightness band against #1f0f26, CVD delta E 12.3. */
-    --chart-1: #ec4899;
-    --chart-2: #3987e5;
-    --chart-grid: #3d2247;
-    --chart-axis: #a382a8;
+    /* Stepped for the dark surface, not flipped: CVD delta E 22.4. */
+    --chart-1: #c08329;
+    --chart-2: #4886cc;
+    --chart-grid: #2e2822;
+    --chart-axis: #6e665e;
 
-    --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-    --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 18px 40px -18px rgb(0 0 0 / 0.7);
+    --shadow-soft: none;
+    --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.8);
   }
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: #140816;
-  --bg-tint: #1b0b20;
-  --surface: #1f0f26;
-  --surface-2: #2a1531;
-  --surface-3: #351b3e;
-  --border: #3d2247;
-  --border-strong: #55305f;
+  --bg: #14110f;
+  --bg-tint: #191512;
+  --surface: #191512;
+  --surface-2: #211c17;
+  --surface-3: #2e2820;
+  --border: #2e2822;
+  --border-strong: #453d33;
 
-  --ink: #fdf2f8;
-  --ink-soft: #d6b6d8;
-  --ink-faint: #a382a8;
+  --ink: #efe9df;
+  --ink-soft: #9a9086;
+  --ink-faint: #6e665e;
 
-  --pink: #f9a8d4;
-  --pink-deep: #f472b6;
-  --lilac: #d8b4fe;
-  --lilac-deep: #c084fc;
-  --cyan: #67e8f9;
-  --mint: #6ee7b7;
-  --gold: #fcd34d;
-  --coral: #fda4af;
+  --accent: #c9a464;
+  --accent-soft: #a8863f;
+  --good: #a8b98f;
+  --warn: #d9b877;
+  --bad: #d98a80;
 
-  --ring: #f9a8d4;
+  --ring: #c9a464;
+  --grid: rgb(239 233 223 / 0.045);
 
-  --chart-1: #ec4899;
-  --chart-2: #3987e5;
-  --chart-grid: #3d2247;
-  --chart-axis: #a382a8;
+  --chart-1: #c08329;
+  --chart-2: #4886cc;
+  --chart-grid: #2e2822;
+  --chart-axis: #6e665e;
 
-  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
-  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 18px 40px -18px rgb(0 0 0 / 0.7);
+  --shadow-soft: none;
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.5), 0 12px 28px -18px rgb(0 0 0 / 0.8);
 }
 
 @theme inline {
@@ -135,21 +128,24 @@
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
 
-  --color-pink: var(--pink);
-  --color-pink-deep: var(--pink-deep);
-  --color-lilac: var(--lilac);
-  --color-lilac-deep: var(--lilac-deep);
-  --color-cyan: var(--cyan);
-  --color-mint: var(--mint);
-  --color-gold: var(--gold);
-  --color-coral: var(--coral);
+  /* The old pink names still resolve, so every existing class keeps working
+     and now points at the bronze. */
+  --color-pink: var(--accent);
+  --color-pink-deep: var(--accent);
+  --color-lilac: var(--accent-soft);
+  --color-lilac-deep: var(--accent-soft);
+  --color-cyan: var(--accent-soft);
+  --color-mint: var(--good);
+  --color-gold: var(--warn);
+  --color-coral: var(--bad);
 
-  --font-display: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+  --font-display: var(--font-garamond), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-script), var(--font-garamond), cursive;
 
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.5rem;
-  --radius-3xl: 2rem;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
 
   --shadow-soft: var(--shadow-soft);
   --shadow-lift: var(--shadow-lift);
@@ -168,109 +164,114 @@ html {
 
 body {
   background-color: var(--bg);
+  /* Graph paper, faint enough to read as texture rather than a table. */
   background-image:
-    radial-gradient(ellipse 80% 50% at 12% -8%, color-mix(in oklab, var(--pink) 24%, transparent), transparent 70%),
-    radial-gradient(ellipse 70% 45% at 92% 4%, color-mix(in oklab, var(--lilac) 20%, transparent), transparent 70%);
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 26px 26px;
   background-attachment: fixed;
   color: var(--ink);
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.55;
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100dvh;
 }
 
-h1, h2, h3, h4, .font-display {
+h1, h2, h3, h4 {
   font-family: var(--font-display);
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  border-radius: 0.5rem;
+  border-radius: 2px;
 }
 
-/* Numbers that change every tap should not reflow the layout. */
-.tnum {
-  font-variant-numeric: tabular-nums;
+/* Every number is set in the sans with tabular figures. Garamond's old-style
+   figures are lovely and useless for lining up weights in a column. */
+.tnum,
+input[type="number"] {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums lining-nums;
   font-feature-settings: "tnum";
+  letter-spacing: -0.01em;
 }
 
 /* --- reusable surfaces --------------------------------------------------- */
 
+/* Sections are separated by a hairline, not boxed in. */
 .card {
-  background-color: color-mix(in oklab, var(--surface) 88%, transparent);
-  backdrop-filter: blur(12px) saturate(1.4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-soft);
+  background-color: transparent;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 20px 0;
 }
 
+/* Anything that genuinely needs to float, like a sheet, opts back in. */
+.panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  box-shadow: var(--shadow-lift);
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* Handwriting is decoration. Never below 19px, never on a number, never on
+   anything that has to be read in a hurry. */
+.hand {
+  font-family: var(--font-script);
+  line-height: 1.4;
+  color: var(--accent);
+}
+
+/* The old gradient names are kept so no call site has to change, but they are
+   flat bronze now. Nothing in this design shimmers. */
 .glitter-text {
-  background: var(--glitter);
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: glitter-pan 7s ease-in-out infinite;
+  color: var(--accent);
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
 }
 
 .glitter-fill {
-  background: var(--glitter);
-  background-size: 220% 100%;
-  animation: glitter-pan 7s ease-in-out infinite;
+  background: var(--accent);
+  color: var(--bg);
 }
 
-/* A slow diagonal shine that reads as sparkle without becoming a strobe. */
-.shimmer {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-.shimmer::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 32%,
-    rgb(255 255 255 / 0.42) 48%,
-    transparent 64%
-  );
-  transform: translateX(-120%);
-  animation: shimmer-sweep 5.5s ease-in-out infinite;
-  pointer-events: none;
-}
+.shimmer::after { display: none; }
 
-@keyframes glitter-pan {
-  0%, 100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
-}
-
-@keyframes shimmer-sweep {
-  0%, 62%  { transform: translateX(-120%); }
-  100%     { transform: translateX(120%); }
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 @keyframes pop-in {
-  0%   { transform: scale(0.86); opacity: 0; }
-  60%  { transform: scale(1.04); }
-  100% { transform: scale(1); opacity: 1; }
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: none; }
 }
-.pop-in { animation: pop-in 240ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.pop-in { animation: pop-in 200ms ease-out both; }
 
-@keyframes ring-fill {
-  from { stroke-dashoffset: var(--dash-from); }
-  to   { stroke-dashoffset: var(--dash-to); }
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.86); }
+  50%      { opacity: 1; transform: scale(1); }
 }
+.twinkle { animation: twinkle 2.8s ease-in-out infinite; }
 
 /* --- iOS standalone chrome ------------------------------------------------ */
 
 .pt-safe { padding-top: env(safe-area-inset-top); }
 .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
-/* Stop the elastic bounce revealing white behind the app shell. */
 @media (display-mode: standalone) {
   body { overscroll-behavior: none; }
 }
@@ -282,10 +283,9 @@ h1, h2, h3, h4, .font-display {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .shimmer::after { display: none; }
+  .twinkle { animation: none; opacity: 1; }
 }
 
-/* Chrome/Safari number spinners are useless on a weight field. */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;

@@ -70,7 +70,7 @@ export function ChartFrame({
         {showTable ? "Hide the numbers" : "See the numbers"}
       </button>
 
-      <div id={tableId} hidden={!showTable} className="mt-2 max-h-64 overflow-auto rounded-xl border border-line">
+      <div id={tableId} hidden={!showTable} className="mt-2 max-h-64 overflow-auto rounded-[2px] border border-line">
         <table className="w-full text-left text-xs">
           <caption className="sr-only">{title}</caption>
           <thead className="sticky top-0 bg-surface-2">
@@ -112,7 +112,7 @@ export function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-xl border border-line bg-surface px-3 py-2 shadow-[var(--shadow-lift)]">
+    <div className="rounded-[2px] border border-line bg-surface px-3 py-2 shadow-[var(--shadow-lift)]">
       <p className="text-[11px] font-bold text-ink-faint">{label}</p>
       {payload.map((entry, index) => (
         <p key={index} className="tnum mt-0.5 flex items-center gap-1.5 text-xs font-semibold text-ink">

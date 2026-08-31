@@ -136,10 +136,10 @@ export function MealLogger({
                   width={72}
                   height={72}
                   unoptimized
-                  className="size-18 shrink-0 rounded-2xl object-cover"
+                  className="size-18 shrink-0 rounded-[2px] object-cover"
                 />
               ) : (
-                <div className="flex size-18 shrink-0 items-center justify-center rounded-2xl bg-surface-2 text-ink-faint">
+                <div className="flex size-18 shrink-0 items-center justify-center rounded-[2px] bg-surface-2 text-ink-faint">
                   <Utensils className="size-5" aria-hidden />
                 </div>
               )}

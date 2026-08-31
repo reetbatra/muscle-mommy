@@ -33,7 +33,7 @@ export function TargetRow({
       ) : null}
 
       {notes ? (
-        <p className="mt-2 rounded-xl bg-surface-2 px-3 py-2 text-xs text-ink-soft">{notes}</p>
+        <p className="mt-2 rounded-[2px] bg-surface-2 px-3 py-2 text-xs text-ink-soft">{notes}</p>
       ) : null}
     </div>
   );
@@ -51,7 +51,7 @@ export function TargetChips({
       {prescription.targets.map((target) => (
         <li
           key={target.setIndex}
-          className="tnum flex items-baseline gap-1 rounded-xl bg-surface-2 px-2.5 py-1.5 text-sm font-bold text-ink"
+          className="tnum flex items-baseline gap-1 rounded-[2px] bg-surface-2 px-2.5 py-1.5 text-sm font-bold text-ink"
         >
           <span className="text-[10px] font-bold text-ink-faint">{target.setIndex}</span>
           {target.weightKg !== null && target.weightKg > 0 ? (
