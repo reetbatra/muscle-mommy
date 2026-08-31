@@ -1,0 +1,122 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  Dumbbell,
+  HeartPulse,
+  ListChecks,
+  LogOut,
+  Share,
+  Target,
+} from "lucide-react";
+import { getSessionContext } from "@/lib/data";
+import { requireUser } from "@/lib/supabase/server";
+import { signOut } from "@/lib/actions/settings";
+import { env } from "@/lib/env";
+import { Screen, ScreenHeader } from "@/components/screen";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { SettingsSection } from "@/components/settings/section";
+import { GoalsForm } from "@/components/settings/goals-form";
+import { GymForm } from "@/components/settings/gym-form";
+import { HealthSync } from "@/components/settings/health-sync";
+import { HabitsManager } from "@/components/settings/habits-manager";
+import type { Habit, IngestToken } from "@/lib/domain/types";
+import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = { title: "Settings" };
+export const dynamic = "force-dynamic";
+
+export default async function SettingsPage() {
+  const ctx = await getSessionContext();
+  const { supabase, user } = await requireUser();
+
+  const [{ data: habits }, { data: tokens }] = await Promise.all([
+    supabase
+      .from("habits")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("is_active", true)
+      .order("sort_order"),
+    supabase
+      .from("ingest_tokens")
+      .select("id, token_prefix, label, created_at, last_used_at, revoked_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const activeTokens = ((tokens ?? []) as IngestToken[]).filter((t) => !t.revoked_at);
+
+  return (
+    <Screen>
+      <ScreenHeader eyebrow={ctx.email ?? ""} title={ctx.profile.display_name ?? "You"} />
+
+      <div className="space-y-3">
+        <SettingsSection
+          icon={HeartPulse}
+          title="Apple Health"
+          summary={
+            activeTokens.length > 0
+              ? `${activeTokens.length} sync ${activeTokens.length === 1 ? "token" : "tokens"} active`
+              : "Not connected yet"
+          }
+          defaultOpen={activeTokens.length === 0}
+        >
+          <HealthSync tokens={(tokens ?? []) as IngestToken[]} siteUrl={env.siteUrl} />
+        </SettingsSection>
+
+        <SettingsSection
+          icon={Target}
+          title="Targets"
+          summary={`${ctx.goals.calorie_target} kcal, ${ctx.goals.protein_g}g protein, ${ctx.goals.step_target.toLocaleString()} steps`}
+        >
+          <GoalsForm goals={ctx.goals} />
+        </SettingsSection>
+
+        <SettingsSection
+          icon={Dumbbell}
+          title="Gym hardware"
+          summary={`${ctx.loadConfig.dumbbellRack.length} dumbbells, ${ctx.loadConfig.machineIncrementKg}kg machine steps`}
+        >
+          <GymForm profile={ctx.profile} />
+        </SettingsSection>
+
+        <SettingsSection
+          icon={ListChecks}
+          title="Daily habits"
+          summary={`${(habits ?? []).length} tracked`}
+        >
+          <HabitsManager habits={(habits ?? []) as Habit[]} />
+        </SettingsSection>
+
+        <section className="card p-5">
+          <div className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-[var(--pink-deep)]">
+              <Share className="size-5" aria-hidden />
+            </span>
+            <div>
+              <h2 className="font-display text-base font-semibold text-ink">Add to home screen</h2>
+              <p className="mt-1 text-sm leading-relaxed text-ink-soft">
+                In Safari, tap the share button, then Add to Home Screen. It opens full screen after
+                that, with no address bar, and works offline for anything already loaded.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <Link
+          href="/lift/edit"
+          className={cn(buttonVariants({ variant: "soft", size: "lg", block: true }))}
+        >
+          <Dumbbell className="size-4" aria-hidden />
+          Edit my split
+        </Link>
+
+        <form action={signOut}>
+          <Button type="submit" variant="ghost" size="lg" block className="text-[var(--coral)]">
+            <LogOut className="size-4" aria-hidden />
+            Sign out
+          </Button>
+        </form>
+      </div>
+    </Screen>
+  );
+}

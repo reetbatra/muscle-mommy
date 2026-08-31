@@ -36,7 +36,7 @@ export function celebrate() {
     spread: 90,
     startVelocity: 38,
     ticks: 160,
-    shapes: ["star", "circle"] as const,
+    shapes: ["star", "circle"] as ("star" | "circle")[],
     colors: PALETTE,
     disableForReducedMotion: true,
   };

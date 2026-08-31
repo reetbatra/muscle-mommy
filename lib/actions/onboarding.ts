@@ -24,6 +24,9 @@ const schema = z.object({
   weightKg: z.number().min(30).max(250),
   activity: z.enum(["sedentary", "light", "moderate", "active"]),
   stepTarget: z.number().int().min(1000).max(40000),
+  /** Overrides the suggested numbers when the user edited them. */
+  calorieTarget: z.number().int().min(1000).max(6000).nullable().default(null),
+  proteinG: z.number().int().min(20).max(400).nullable().default(null),
   templateId: z.string().min(1),
   baselines: z.array(baselineSchema).max(60).default([]),
 });
@@ -50,8 +53,8 @@ export async function completeOnboarding(input: OnboardingInput) {
     age: values.age,
     activity: values.activity,
   });
-  const calorieTarget = suggestCalorieTarget(maintenance);
-  const protein = suggestProtein(values.weightKg);
+  const calorieTarget = values.calorieTarget ?? suggestCalorieTarget(maintenance);
+  const protein = values.proteinG ?? suggestProtein(values.weightKg);
 
   const { error: profileError } = await supabase
     .from("profiles")

@@ -34,6 +34,15 @@
   --coral: #f43f5e;
 
   --ring: #f472b6;
+
+  /* Chart series. Validated against a #ffffff chart surface: CVD delta E 15.9,
+     normal-vision 30.4, both marks over 3:1 contrast. Do not eyeball a
+     replacement, re-run the validator. */
+  --chart-1: #db2777;
+  --chart-2: #2a78d6;
+  --chart-grid: #f3dcea;
+  --chart-axis: #9b7d99;
+
   --shadow-soft: 0 1px 2px rgb(219 39 119 / 0.06), 0 8px 24px -12px rgb(219 39 119 / 0.28);
   --shadow-lift: 0 2px 4px rgb(219 39 119 / 0.08), 0 18px 40px -18px rgb(219 39 119 / 0.36);
   --glitter: linear-gradient(115deg, #f472b6 0%, #c084fc 46%, #67e8f9 100%);
@@ -65,6 +74,14 @@
     --coral: #fda4af;
 
     --ring: #f9a8d4;
+
+    /* Stepped for the dark surface rather than flipped: both sit in the
+       0.48-0.67 lightness band against #1f0f26, CVD delta E 12.3. */
+    --chart-1: #ec4899;
+    --chart-2: #3987e5;
+    --chart-grid: #3d2247;
+    --chart-axis: #a382a8;
+
     --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
     --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 18px 40px -18px rgb(0 0 0 / 0.7);
   }
@@ -95,6 +112,12 @@
   --coral: #fda4af;
 
   --ring: #f9a8d4;
+
+  --chart-1: #ec4899;
+  --chart-2: #3987e5;
+  --chart-grid: #3d2247;
+  --chart-axis: #a382a8;
+
   --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.6);
   --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.45), 0 18px 40px -18px rgb(0 0 0 / 0.7);
 }

@@ -130,6 +130,8 @@ export type HealthDay = {
   log_date: string;
   steps: number | null;
   active_kcal: number | null;
+  basal_kcal: number | null;
+  workout_kcal: number | null;
   exercise_minutes: number | null;
   resting_hr: number | null;
   sleep_minutes: number | null;

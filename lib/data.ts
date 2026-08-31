@@ -58,6 +58,7 @@ export async function getSessionContext(): Promise<SessionContext> {
 }
 
 export type RoutineExerciseFull = RoutineExercise & {
+  display_name: string | null;
   load_type: LoadType;
   increment_kg: number | null;
   rep_ceiling_max: number;

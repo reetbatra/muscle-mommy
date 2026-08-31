@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import withSerwistInit from "@serwist/next";
 
 const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
@@ -15,13 +14,17 @@ const nextConfig: NextConfig = {
     // Meal photos arrive straight off an iPhone camera and are large.
     serverActions: { bodySizeLimit: "12mb" },
   },
+  async headers() {
+    return [
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
+  },
 };
 
-const withSerwist = withSerwistInit({
-  swSrc: "app/sw.ts",
-  swDest: "public/sw.js",
-  disable: process.env.NODE_ENV === "development",
-  reloadOnOnline: true,
-});
-
-export default withSerwist(nextConfig);
+export default nextConfig;

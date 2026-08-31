@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fredoka, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
+import { ServiceWorker } from "@/components/service-worker";
 import "./globals.css";
 
 const fredoka = Fredoka({
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${fredoka.variable} ${jakarta.variable}`}>
       <body className="antialiased">
         {children}
+        <ServiceWorker />
         <Toaster
           position="top-center"
           richColors

@@ -92,9 +92,8 @@ export async function signMealPhotos(paths: string[]): Promise<Record<string, st
     .createSignedUrls(paths, 60 * 60);
   if (error) throw new Error(`Could not load your photos: ${error.message}`);
 
-  return Object.fromEntries(
-    (data ?? [])
-      .filter((entry) => entry.signedUrl && entry.path)
-      .map((entry) => [entry.path as string, entry.signedUrl]),
+  const pairs = (data ?? []).flatMap((entry) =>
+    entry.path && entry.signedUrl ? [[entry.path, entry.signedUrl] as const] : [],
   );
+  return Object.fromEntries(pairs);
 }
