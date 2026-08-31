@@ -9,6 +9,7 @@ import {
   Share,
   Target,
   UserRound,
+  Utensils,
 } from "lucide-react";
 import { getSessionContext } from "@/lib/data";
 import { requireUser } from "@/lib/supabase/server";
@@ -22,6 +23,7 @@ import { GymForm } from "@/components/settings/gym-form";
 import { HealthSync } from "@/components/settings/health-sync";
 import { HabitsManager } from "@/components/settings/habits-manager";
 import { HevySync } from "@/components/settings/hevy-sync";
+import { FoodMemory, type MemoryRow } from "@/components/settings/food-memory";
 import { getHevyStatus } from "@/lib/actions/hevy";
 import type { Exercise } from "@/lib/domain/types";
 import type { Habit, IngestToken } from "@/lib/domain/types";
@@ -34,7 +36,8 @@ export default async function SettingsPage() {
   const ctx = await getSessionContext();
   const { supabase, user } = await requireUser();
 
-  const [{ data: habits }, { data: tokens }, hevy, { data: library }] = await Promise.all([
+  const [{ data: habits }, { data: tokens }, hevy, { data: library }, { data: memories }] =
+    await Promise.all([
     supabase
       .from("habits")
       .select("*")
@@ -52,6 +55,13 @@ export default async function SettingsPage() {
       .select("id, user_id, name, muscle_group, equipment")
       .or(`user_id.is.null,user_id.eq.${user.id}`)
       .order("name"),
+    supabase
+      .from("food_memories")
+      .select("id, name, portion, kcal, protein_g, times_logged, is_pinned")
+      .eq("user_id", user.id)
+      .order("is_pinned", { ascending: false })
+      .order("times_logged", { ascending: false })
+      .limit(80),
   ]);
 
   const activeTokens = ((tokens ?? []) as IngestToken[]).filter((t) => !t.revoked_at);
@@ -92,6 +102,18 @@ export default async function SettingsPage() {
           summary={`${ctx.goals.calorie_target} kcal, ${ctx.goals.protein_g}g protein, ${ctx.goals.step_target.toLocaleString()} steps`}
         >
           <GoalsForm goals={ctx.goals} />
+        </SettingsSection>
+
+        <SettingsSection
+          icon={Utensils}
+          title="Food memory"
+          summary={
+            (memories ?? []).length > 0
+              ? `${(memories ?? []).length} portions learned`
+              : "Nothing learned yet"
+          }
+        >
+          <FoodMemory memories={(memories ?? []) as MemoryRow[]} />
         </SettingsSection>
 
         <SettingsSection

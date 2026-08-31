@@ -97,3 +97,30 @@ export async function signMealPhotos(paths: string[]): Promise<Record<string, st
   );
   return Object.fromEntries(pairs);
 }
+
+// ---------------------------------------------------------------------------
+// Food memory
+// ---------------------------------------------------------------------------
+
+/** Pinned means the user's own statement, which no estimate may overwrite. */
+export async function setFoodMemoryPinned(memoryId: string, pinned: boolean) {
+  const { supabase, user } = await requireUser();
+  const { error } = await supabase
+    .from("food_memories")
+    .update({ is_pinned: z.boolean().parse(pinned) })
+    .eq("id", z.uuid().parse(memoryId))
+    .eq("user_id", user.id);
+  if (error) throw new Error(`Could not change that: ${error.message}`);
+  revalidatePath("/settings");
+}
+
+export async function deleteFoodMemory(memoryId: string) {
+  const { supabase, user } = await requireUser();
+  const { error } = await supabase
+    .from("food_memories")
+    .delete()
+    .eq("id", z.uuid().parse(memoryId))
+    .eq("user_id", user.id);
+  if (error) throw new Error(`Could not forget that: ${error.message}`);
+  revalidatePath("/settings");
+}

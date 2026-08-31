@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Camera, Loader2, Pencil, Plus, Trash2, Utensils } from "lucide-react";
+import { Camera, Image as ImageIcon, Loader2, Pencil, Trash2, Utensils } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FieldRow, Input, NumberStepper, Select } from "@/components/ui/field";
@@ -42,27 +42,43 @@ export function MealLogger({
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [analysing, setAnalysing] = useState(false);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [note, setNote] = useState("");
   const [manualOpen, setManualOpen] = useState(false);
   const [editing, setEditing] = useState<Meal | null>(null);
 
-  async function onPhoto(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+  function onPick(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
     event.target.value = "";
-    if (!file) return;
+    setPhoto(file);
+  }
+
+  /**
+   * A photo, a sentence, or both. What you type wins over what the picture
+   * looks like, which is the whole point of letting you type.
+   */
+  async function submit() {
+    if (!photo && note.trim().length === 0) return;
 
     setAnalysing(true);
     try {
       const body = new FormData();
-      body.append("photo", file);
+      if (photo) body.append("photo", photo);
+      if (note.trim()) body.append("note", note.trim());
       body.append("log_date", today);
 
       const response = await fetch("/api/food/analyze", { method: "POST", body });
       const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error ?? "Could not read that meal.");
 
-      if (!response.ok) throw new Error(payload.error ?? "Could not read that photo.");
-
+      setPhoto(null);
+      setNote("");
       celebrate();
-      toast.success(`Logged ${payload.meal.title}, about ${payload.meal.kcal} kcal.`);
+      toast.success(
+        payload.learned?.length
+          ? `${payload.meal.title}, ${payload.meal.kcal} kcal. Remembered ${payload.learned.length} new ${payload.learned.length === 1 ? "food" : "foods"}.`
+          : `${payload.meal.title}, ${payload.meal.kcal} kcal.`,
+      );
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong.");
@@ -79,29 +95,67 @@ export function MealLogger({
         accept="image/*"
         capture="environment"
         className="sr-only"
-        onChange={onPhoto}
+        onChange={onPick}
         aria-label="Take a photo of your meal"
       />
 
-      <div className="flex gap-2">
-        <Button
-          variant="glitter"
-          size="lg"
-          block
-          loading={analysing}
-          onClick={() => fileRef.current?.click()}
-        >
-          {analysing ? null : <Camera className="size-4" aria-hidden />}
-          {analysing ? "Reading the plate" : "Photograph a meal"}
-        </Button>
-        <Button
-          variant="soft"
-          size="lg"
-          aria-label="Add a meal by hand"
-          onClick={() => setManualOpen(true)}
-        >
-          <Plus className="size-5" aria-hidden />
-        </Button>
+      <div className="border-t border-line pt-4">
+        <Input
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="200g paneer, 2 rotis"
+          aria-label="What did you eat"
+          disabled={analysing}
+        />
+
+        {photo ? (
+          <div className="mt-2 flex items-center gap-2 text-[15px] text-ink-soft">
+            <ImageIcon className="size-4 shrink-0 text-[var(--accent)]" aria-hidden />
+            <span className="min-w-0 flex-1 truncate">{photo.name}</span>
+            <button
+              type="button"
+              onClick={() => setPhoto(null)}
+              className="cursor-pointer text-[13px] text-ink-faint underline"
+            >
+              Remove
+            </button>
+          </div>
+        ) : null}
+
+        <div className="mt-3 flex gap-2">
+          <Button
+            variant="soft"
+            size="md"
+            onClick={() => fileRef.current?.click()}
+            disabled={analysing}
+          >
+            <Camera className="size-4" aria-hidden />
+            {photo ? "Change photo" : "Photo"}
+          </Button>
+          <Button
+            variant="glitter"
+            size="md"
+            block
+            loading={analysing}
+            disabled={!photo && note.trim().length === 0}
+            onClick={submit}
+          >
+            {analysing ? "Reading" : "Log it"}
+          </Button>
+        </div>
+
+        <div className="mt-2 flex items-baseline justify-between gap-3">
+          <p className="text-[13px] text-ink-faint">
+            An amount you type wins over the photo, and gets remembered.
+          </p>
+          <button
+            type="button"
+            onClick={() => setManualOpen(true)}
+            className="shrink-0 cursor-pointer text-[13px] text-ink-faint underline"
+          >
+            By hand
+          </button>
+        </div>
       </div>
 
       {analysing ? (
