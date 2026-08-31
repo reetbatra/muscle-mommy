@@ -178,6 +178,39 @@ if (verified?.session) {
 
   await admin.from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", uid);
 
+  /*
+   * Insert through the user's own session, not the service role. The service
+   * role bypasses row level security, which is why a missing insert policy on
+   * ingest_tokens went unnoticed until it 500'd in production.
+   */
+  const asUser = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+    auth: { persistSession: false },
+  });
+  await asUser.auth.setSession({
+    access_token: verified.session.access_token,
+    refresh_token: verified.session.refresh_token,
+  });
+
+  const probe = `mm_rls_${Date.now()}`;
+  const probeHash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(probe)))]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  const { error: mintError } = await asUser.from("ingest_tokens").insert({
+    user_id: uid,
+    token_hash: probeHash,
+    token_prefix: probe.slice(0, 8),
+    label: "rls probe",
+  });
+  check("a signed-in user can mint their own token", !mintError, mintError?.message ?? "ok");
+
+  const { error: forgeError } = await asUser.from("ingest_tokens").insert({
+    user_id: "00000000-0000-0000-0000-000000000000",
+    token_hash: `${probeHash}f`,
+    token_prefix: "mm_forge",
+    label: "forgery probe",
+  });
+  check("but not one pointed at somebody else", !!forgeError, forgeError?.message ?? "IT SUCCEEDED");
+
   for (const path of ["/today", "/lift", "/food", "/progress", "/settings"]) {
     const res = await fetch(`${base}${path}`, { headers: { cookie }, redirect: "manual" });
     const body = res.status === 200 ? await res.text() : "";

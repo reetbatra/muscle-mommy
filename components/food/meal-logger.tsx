@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { createMeal, deleteMeal, updateMeal } from "@/lib/actions/food";
 import { MEAL_TYPES } from "@/lib/domain/food-schema";
 import { celebrate } from "@/lib/celebrate";
+import { downscaleImage } from "@/lib/image";
 import { Sparkle } from "@/components/ui/sparkle";
 import type { Meal } from "@/lib/domain/types";
 import { cn } from "@/lib/utils";
@@ -44,14 +45,24 @@ export function MealLogger({
   const fileRef = useRef<HTMLInputElement>(null);
   const [analysing, setAnalysing] = useState(false);
   const [photo, setPhoto] = useState<File | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const [note, setNote] = useState("");
   const [manualOpen, setManualOpen] = useState(false);
   const [editing, setEditing] = useState<Meal | null>(null);
 
-  function onPick(event: React.ChangeEvent<HTMLInputElement>) {
+  async function onPick(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
     event.target.value = "";
-    setPhoto(file);
+    if (!file) {
+      setPhoto(null);
+      return;
+    }
+    setPreparing(true);
+    try {
+      setPhoto(await downscaleImage(file));
+    } finally {
+      setPreparing(false);
+    }
   }
 
   /**
@@ -90,14 +101,18 @@ export function MealLogger({
 
   return (
     <>
+      {/*
+        No `capture` attribute on purpose. With it, iOS opens the camera
+        directly and the photo library is unreachable. Without it, the native
+        sheet offers Photo Library, Take Photo and Choose Files.
+      */}
       <input
         ref={fileRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="sr-only"
         onChange={onPick}
-        aria-label="Take a photo of your meal"
+        aria-label="Choose or take a photo of your meal"
       />
 
       <div className="border-t border-line pt-4">
@@ -116,7 +131,12 @@ export function MealLogger({
         {photo ? (
           <div className="mt-2 flex items-center gap-2 text-[15px] text-ink-soft">
             <ImageIcon className="size-4 shrink-0 text-[var(--accent)]" aria-hidden />
-            <span className="min-w-0 flex-1 truncate">{photo.name}</span>
+            <span className="min-w-0 flex-1 truncate">
+              {photo.name}
+              <span className="tnum ml-2 text-ink-faint">
+                {(photo.size / 1024).toFixed(0)}kb
+              </span>
+            </span>
             <button
               type="button"
               onClick={() => setPhoto(null)}
@@ -131,18 +151,19 @@ export function MealLogger({
           <Button
             variant="soft"
             size="md"
+            loading={preparing}
             onClick={() => fileRef.current?.click()}
             disabled={analysing}
           >
-            <Camera className="size-4" aria-hidden />
-            {photo ? "Change photo" : "Photo"}
+            {preparing ? null : <ImageIcon className="size-4" aria-hidden />}
+            {photo ? "Change" : "Photo"}
           </Button>
           <Button
             variant="glitter"
             size="md"
             block
             loading={analysing}
-            disabled={!photo && note.trim().length === 0}
+            disabled={preparing || (!photo && note.trim().length === 0)}
             onClick={submit}
           >
             {analysing ? "Reading" : "Log it"}
