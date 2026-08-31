@@ -18,6 +18,8 @@ const PUBLIC_PATHS = [
   "/manifest.webmanifest",
   "/apple-icon",
   "/icon",
+  // Temporary, unlisted design comparison. Comes out once a direction is picked.
+  "/preview",
 ];
 
 export async function proxy(request: NextRequest) {
