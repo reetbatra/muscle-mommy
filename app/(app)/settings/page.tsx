@@ -37,8 +37,14 @@ export default async function SettingsPage() {
   const ctx = await getSessionContext();
   const { supabase, user } = await requireUser();
 
-  const [{ data: habits }, { data: tokens }, hevy, { data: library }, { data: memories }] =
-    await Promise.all([
+  const [
+    { data: habits },
+    { data: tokens },
+    hevy,
+    { data: library },
+    { data: lastHealth },
+    { data: memories },
+  ] = await Promise.all([
     supabase
       .from("habits")
       .select("*")
@@ -56,6 +62,14 @@ export default async function SettingsPage() {
       .select("id, user_id, name, muscle_group, equipment")
       .or(`user_id.is.null,user_id.eq.${user.id}`)
       .order("name"),
+    supabase
+      .from("health_days")
+      .select("log_date, steps, active_kcal, basal_kcal, weight_kg, sleep_minutes")
+      .eq("user_id", user.id)
+      .eq("source", "shortcut")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
     supabase
       .from("food_memories")
       .select("id, name, portion, kcal, protein_g, times_logged, is_pinned")
@@ -82,7 +96,22 @@ export default async function SettingsPage() {
           }
           defaultOpen={activeTokens.length === 0}
         >
-          <HealthSync tokens={(tokens ?? []) as IngestToken[]} siteUrl={env.siteUrl} />
+          <HealthSync
+            tokens={(tokens ?? []) as IngestToken[]}
+            siteUrl={env.siteUrl}
+            lastReceived={
+              lastHealth
+                ? {
+                    logDate: lastHealth.log_date,
+                    steps: lastHealth.steps,
+                    activeKcal: lastHealth.active_kcal,
+                    basalKcal: lastHealth.basal_kcal,
+                    weightKg: lastHealth.weight_kg === null ? null : Number(lastHealth.weight_kg),
+                    sleepMinutes: lastHealth.sleep_minutes,
+                  }
+                : null
+            }
+          />
         </SettingsSection>
 
         <SettingsSection

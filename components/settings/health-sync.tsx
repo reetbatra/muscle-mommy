@@ -20,12 +20,23 @@ const HEALTH_FIELDS = [
   ["resting_hr", "Resting Heart Rate", "Average", false],
 ] as const;
 
+export type LastReceived = {
+  logDate: string;
+  steps: number | null;
+  activeKcal: number | null;
+  basalKcal: number | null;
+  weightKg: number | null;
+  sleepMinutes: number | null;
+} | null;
+
 export function HealthSync({
   tokens,
   siteUrl,
+  lastReceived,
 }: {
   tokens: IngestToken[];
   siteUrl: string;
+  lastReceived: LastReceived;
 }) {
   const router = useRouter();
   const [freshToken, setFreshToken] = useState<string | null>(null);
@@ -97,6 +108,8 @@ export function HealthSync({
           ))}
         </ul>
       )}
+
+      {active.length > 0 ? <ReceivedPanel last={lastReceived} /> : null}
 
       {freshToken ? (
         <div className="rounded-2xl border-2 border-[var(--ring)] bg-surface-2 p-4">
@@ -188,6 +201,61 @@ export function HealthSync({
       ) : null}
     </div>
   );
+}
+
+/**
+ * What actually arrived. Without this, a Shortcut that posts zeros looks
+ * identical to one that was never set up, and there is no way to tell whether
+ * the problem is the phone or the app.
+ */
+function ReceivedPanel({ last }: { last: LastReceived }) {
+  if (!last) {
+    return (
+      <p className="border border-line p-3 text-[14px] leading-relaxed text-ink-soft">
+        Nothing received yet. Run the shortcut once by hand and this fills in.
+      </p>
+    );
+  }
+
+  const rows: [string, string][] = [
+    ["Steps", format(last.steps)],
+    ["Active energy", format(last.activeKcal, "kcal")],
+    ["Resting energy", format(last.basalKcal, "kcal")],
+    ["Weight", format(last.weightKg, "kg")],
+    ["Sleep", last.sleepMinutes ? `${Math.floor(last.sleepMinutes / 60)}h ${last.sleepMinutes % 60}m` : "nothing"],
+  ];
+
+  const allEmpty = [last.steps, last.activeKcal, last.basalKcal].every((v) => !v);
+
+  return (
+    <div className="border border-line p-3">
+      <p className="eyebrow">Last received, {last.logDate}</p>
+      <dl className="tnum mt-2 space-y-1 text-[14px]">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex justify-between gap-3">
+            <dt className="text-ink-soft">{label}</dt>
+            <dd className={value === "nothing" || value === "0" ? "text-[var(--bad)]" : "text-ink"}>
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      {allEmpty ? (
+        <p className="mt-3 border-t border-line pt-3 text-[14px] leading-relaxed text-ink-soft">
+          Zeros mean the shortcut reached the app but the Health actions found no samples. In
+          Shortcuts, open one of the Find Health Samples actions, check the type is right, and tap
+          the result to Quick Look it. If that shows nothing, the filter is the problem, usually
+          Start Date not set to Today, or Health access not granted yet.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function format(value: number | null, unit?: string) {
+  if (value === null || value === undefined) return "nothing";
+  return unit ? `${value.toLocaleString()} ${unit}` : value.toLocaleString();
 }
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
