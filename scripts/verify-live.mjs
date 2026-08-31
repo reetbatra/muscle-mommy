@@ -145,6 +145,51 @@ for (const [path, expect] of [["/", 200], ["/login", 200], ["/manifest.webmanife
 const guarded = await fetch(`${base}/today`, { redirect: "manual" });
 check("GET /today redirects when signed out", [307, 302, 303].includes(guarded.status), `got ${guarded.status} to ${guarded.headers.get("location")}`);
 
+// The gap that let a 500 reach production: nothing here had ever rendered a
+// signed-in page. A broken query in getSessionContext passed every check.
+console.log("\n--- signed-in pages ---");
+const { data: linkData } = await admin.auth.admin.generateLink({
+  type: "magiclink",
+  email,
+  options: { redirectTo: `${base}/auth/callback` },
+});
+
+const authed = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  auth: { persistSession: false, flowType: "implicit" },
+});
+const { data: verified, error: verifyError } = await authed.auth.verifyOtp({
+  type: "magiclink",
+  token_hash: linkData.properties.hashed_token,
+});
+check("a magic link produces a session", !verifyError && !!verified?.session, verifyError?.message ?? "ok");
+
+if (verified?.session) {
+  // Mirror the cookies @supabase/ssr writes so the server sees a real session.
+  const ref = new URL(env.NEXT_PUBLIC_SUPABASE_URL).hostname.split(".")[0];
+  const payload = JSON.stringify({
+    access_token: verified.session.access_token,
+    refresh_token: verified.session.refresh_token,
+    expires_at: verified.session.expires_at,
+    expires_in: verified.session.expires_in,
+    token_type: "bearer",
+    user: verified.session.user,
+  });
+  const cookie = `sb-${ref}-auth-token=base64-${Buffer.from(payload).toString("base64url")}`;
+
+  await admin.from("profiles").update({ onboarded_at: new Date().toISOString() }).eq("id", uid);
+
+  for (const path of ["/today", "/lift", "/food", "/progress", "/settings"]) {
+    const res = await fetch(`${base}${path}`, { headers: { cookie }, redirect: "manual" });
+    const body = res.status === 200 ? await res.text() : "";
+    const serverError = body.includes("Application error") || body.includes("digest");
+    check(
+      `GET ${path} renders`,
+      res.status === 200 && !serverError,
+      `got ${res.status}${serverError ? " with a server error" : ""}`,
+    );
+  }
+}
+
 console.log("\n--- cleanup ---");
 await admin.auth.admin.deleteUser(uid);
 const { data: gone } = await admin.from("profiles").select("id").eq("id", uid).maybeSingle();

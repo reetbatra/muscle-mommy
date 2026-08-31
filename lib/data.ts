@@ -34,23 +34,27 @@ export type SessionContext = {
 /**
  * Profile, goals, and the user's own idea of what day it is.
  *
- * One round trip, not two: goals are embedded in the profile row. Cached per
- * request because several loaders on the same page want it.
+ * Two queries rather than an embedded select. PostgREST can only embed across
+ * a foreign key it can see, and goals.user_id references auth.users, not
+ * profiles, so `select("*, goals(*)")` fails at runtime with "could not find a
+ * relationship". It also bought nothing: these run concurrently, so the cost
+ * is one round trip either way.
+ *
+ * Cached per request because several loaders on the same page want it.
  */
 export const getSessionContext = cache(async (): Promise<SessionContext> => {
   const { supabase, user } = await requireUser();
 
-  const { data: row, error } = await supabase
-    .from("profiles")
-    .select("*, goals(*)")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile, error: profileError }, { data: goals, error: goalsError }] =
+    await Promise.all([
+      supabase.from("profiles").select("*").eq("id", user.id).single(),
+      supabase.from("goals").select("*").eq("user_id", user.id).single(),
+    ]);
 
-  if (error) throw new Error(`Could not load your profile: ${error.message}`);
-
-  const { goals: embedded, ...profile } = row as typeof row & { goals: Goals | Goals[] | null };
-  const goals = (Array.isArray(embedded) ? embedded[0] : embedded) as Goals | undefined;
-  if (!goals) throw new Error("Could not load your targets.");
+  if (profileError) throw new Error(`Could not load your profile: ${profileError.message}`);
+  if (goalsError || !goals) {
+    throw new Error(`Could not load your targets: ${goalsError?.message ?? "no goals row"}`);
+  }
 
   const timezone = safeTimezone(profile.timezone);
 

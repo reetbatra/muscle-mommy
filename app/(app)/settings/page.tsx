@@ -73,7 +73,7 @@ export default async function SettingsPage() {
 
       <div className="space-y-3">
         <SettingsSection
-          icon={HeartPulse}
+          icon={<HeartPulse className="size-5" aria-hidden />}
           title="Apple Health"
           summary={
             activeTokens.length > 0
@@ -86,7 +86,7 @@ export default async function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection
-          icon={Activity}
+          icon={<Activity className="size-5" aria-hidden />}
           title="Hevy"
           summary={
             hevy.connected
@@ -98,7 +98,7 @@ export default async function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection
-          icon={Target}
+          icon={<Target className="size-5" aria-hidden />}
           title="Targets"
           summary={`${ctx.goals.calorie_target} kcal, ${ctx.goals.protein_g}g protein, ${ctx.goals.step_target.toLocaleString()} steps`}
         >
@@ -106,7 +106,7 @@ export default async function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection
-          icon={Utensils}
+          icon={<Utensils className="size-5" aria-hidden />}
           title="Food memory"
           summary={
             (memories ?? []).length > 0
@@ -118,7 +118,7 @@ export default async function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection
-          icon={Dumbbell}
+          icon={<Dumbbell className="size-5" aria-hidden />}
           title="Gym hardware"
           summary={`${ctx.loadConfig.dumbbellRack.length} dumbbells, ${ctx.loadConfig.machineIncrementKg}kg machine steps`}
         >
@@ -126,7 +126,7 @@ export default async function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection
-          icon={ListChecks}
+          icon={<ListChecks className="size-5" aria-hidden />}
           title="Daily habits"
           summary={`${(habits ?? []).length} tracked`}
         >
@@ -157,7 +157,7 @@ export default async function SettingsPage() {
         </Link>
 
         <SettingsSection
-          icon={UserRound}
+          icon={<UserRound className="size-5" aria-hidden />}
           title="Account"
           summary={ctx.email ?? "Signed in"}
         >
