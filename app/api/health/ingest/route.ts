@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hashToken } from "@/lib/tokens";
+import { safeTimezone } from "@/lib/domain/dates";
 import { parseHealthNumber } from "@/lib/domain/numbers";
 
 /**
@@ -16,7 +17,12 @@ import { parseHealthNumber } from "@/lib/domain/numbers";
 const numberish = z.union([z.number(), z.string()]).transform(parseHealthNumber);
 
 const daySchema = z.object({
-  date: z.iso.date(),
+  /**
+   * Optional. Left out, it resolves to today in the account's own timezone,
+   * which removes a Format Date action and a variable from the Shortcut.
+   * Backfilling a past day still sends it explicitly.
+   */
+  date: z.iso.date().optional(),
   steps: numberish.nullish(),
   active_kcal: numberish.nullish(),
   basal_kcal: numberish.nullish(),
@@ -71,9 +77,18 @@ export async function POST(request: Request) {
 
   const days = "days" in parsed.data ? parsed.data.days : [parsed.data];
 
+  // Whose day is it? Theirs, not the server's.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("timezone")
+    .eq("id", tokenRow.user_id)
+    .maybeSingle();
+  const timezone = safeTimezone(profile?.timezone);
+  const todayForUser = new Intl.DateTimeFormat("en-CA", { timeZone: timezone }).format(new Date());
+
   const healthRows = days.map((day) => ({
     user_id: tokenRow.user_id,
-    log_date: day.date,
+    log_date: day.date ?? todayForUser,
     steps: intOrNull(day.steps),
     active_kcal: intOrNull(day.active_kcal),
     basal_kcal: intOrNull(day.basal_kcal),
@@ -106,7 +121,11 @@ export async function POST(request: Request) {
 
   const cycleRows = days
     .filter((day) => day.flow)
-    .map((day) => ({ user_id: tokenRow.user_id, log_date: day.date, flow: day.flow! }));
+    .map((day) => ({
+      user_id: tokenRow.user_id,
+      log_date: day.date ?? todayForUser,
+      flow: day.flow!,
+    }));
 
   if (cycleRows.length > 0) {
     const { error } = await supabase
@@ -125,7 +144,7 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     saved: days.length,
-    dates: days.map((d) => d.date),
+    dates: days.map((d) => d.date ?? todayForUser),
   });
 }
 

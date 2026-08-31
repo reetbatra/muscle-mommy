@@ -119,20 +119,18 @@ export function HealthSync({
             <h3 className="font-display text-base font-semibold text-ink">
               Setting up the Shortcut
             </h3>
-            <ol className="mt-3 space-y-3 text-sm leading-relaxed text-ink-soft">
+            <ol className="mt-3 space-y-3 text-[15px] leading-relaxed text-ink-soft">
               <Step n={1}>
-                Open the Shortcuts app and make a new shortcut. Call it{" "}
-                <strong className="text-ink">Muscle Mommy Sync</strong>.
+                Shortcuts app, new shortcut, call it{" "}
+                <strong className="text-ink">Muscle Mommy</strong>.
               </Step>
               <Step n={2}>
-                Start with steps alone and get that working before adding anything else. Add{" "}
-                <strong className="text-ink">Find Health Samples Where</strong>, set Type to Steps
-                and add a filter for Start Date is Today. Then add{" "}
-                <strong className="text-ink">Calculate Statistics</strong>, set Operation to Sum
-                over Value, and a <strong className="text-ink">Set Variable</strong> named{" "}
-                <code className="rounded bg-surface-3 px-1 text-xs">steps</code>. Repeat that
-                trio for each row below:
-                <ul className="tnum mt-2 space-y-1 rounded-xl bg-surface-2 p-3 text-xs">
+                For each row below add three actions:{" "}
+                <strong className="text-ink">Find Health Samples Where</strong> with that type and
+                a filter of Start Date is Today, then{" "}
+                <strong className="text-ink">Calculate Statistics</strong> set to Sum of Value,
+                then <strong className="text-ink">Set Variable</strong> with that name.
+                <ul className="tnum mt-2 space-y-1 border border-line p-3 text-[14px]">
                   {HEALTH_FIELDS.map(([key, sample, calc, essential]) => (
                     <li key={key} className="flex justify-between gap-3">
                       <span className="font-semibold text-ink">
@@ -147,46 +145,37 @@ export function HealthSync({
                     </li>
                   ))}
                 </ul>
-                The first four are what the deficit and the step ring run on. The rest are extra.
-                Everything except the date is optional. Weight is the odd one out: instead of
-                Calculate Statistics, set Sort by to Start Date with Latest First and Limit to 1,
-                then add <strong className="text-ink">Get Details of Health Sample</strong> and
-                pick Value.
+                Weight is the odd one: instead of Calculate Statistics, set Sort by to Start Date,
+                Latest First, Limit 1, then add{" "}
+                <strong className="text-ink">Get Details of Health Sample</strong> and pick Value.
               </Step>
               <Step n={3}>
-                Add a <strong className="text-ink">Get Contents of URL</strong> action pointed at
-                this address, with the method set to POST:
+                Add <strong className="text-ink">Get Contents of URL</strong>, method POST, pointed
+                here:
                 <CopyBlock label="Endpoint" value={endpoint} className="mt-2" />
               </Step>
               <Step n={4}>
-                Under Headers, add <strong className="text-ink">Authorization</strong> with the
-                value <code className="rounded bg-surface-3 px-1 text-xs">Bearer</code> followed by
+                Under Headers add <strong className="text-ink">Authorization</strong> set to{" "}
+                <code className="bg-surface-2 px-1 text-[13px]">Bearer</code> then a space then
                 your token, and <strong className="text-ink">Content-Type</strong> set to{" "}
-                <code className="rounded bg-surface-3 px-1 text-xs">application/json</code>.
+                <code className="bg-surface-2 px-1 text-[13px]">application/json</code>.
               </Step>
               <Step n={5}>
-                Set Request Body to JSON and build these keys, dropping in the variables from step
-                two. Only <code className="rounded bg-surface-3 px-1 text-xs">date</code> is
-                required:
+                Set Request Body to JSON and add one field per variable. No date field is needed,
+                it uses today in your timezone.
                 <CopyBlock
                   label="Body shape"
                   className="mt-2"
                   value={`{
-  "date": "2026-08-31",
-  "steps": 8421,
-  "active_kcal": 412,
-  "basal_kcal": 1380,
-  "exercise_minutes": 38,
-  "sleep_minutes": 431,
-  "weight_kg": 61.2,
-  "resting_hr": 58
+  "steps": 9412,
+  "active_kcal": 468,
+  "basal_kcal": 1342
 }`}
                 />
               </Step>
               <Step n={6}>
-                Go to the Automation tab, add a <strong className="text-ink">Time of Day</strong>{" "}
-                automation for around 7am, daily, and set it to run this shortcut immediately with
-                no confirmation.
+                Automation tab, plus, <strong className="text-ink">Time of Day</strong>, around
+                10pm, Daily, run this shortcut, and turn off Ask Before Running.
               </Step>
             </ol>
 
