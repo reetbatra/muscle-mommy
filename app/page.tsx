@@ -37,8 +37,8 @@ export default function LandingPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pt-safe pb-20">
       <header className="pt-14 pb-4 text-center">
-        <div className="glitter-fill shimmer mx-auto flex size-16 items-center justify-center rounded-3xl shadow-[0_10px_30px_-12px_rgb(219_39_119/0.6)]">
-          <Dumbbell className="size-8 text-white" aria-hidden />
+        <div className="mx-auto flex size-16 items-center justify-center border border-line bg-surface">
+          <Dumbbell className="size-8 text-[var(--accent)]" strokeWidth={1.6} aria-hidden />
         </div>
         <p className="hand mt-7 text-[38px] leading-none">Muscle Mommy</p>
         <p className="mx-auto mt-5 max-w-[26ch] text-[19px] leading-relaxed text-ink-soft">

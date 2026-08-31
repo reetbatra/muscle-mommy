@@ -52,12 +52,16 @@ export default async function LiftPage() {
       {data.openSession ? (
         <Link
           href={`/lift/session/${data.openSession.id}`}
-          className="glitter-fill shimmer mb-4 block cursor-pointer rounded-3xl p-5 text-white"
+          className="mb-4 block cursor-pointer border border-[var(--accent)] p-5 text-ink"
         >
-          <p className="text-xs font-bold tracking-[0.14em] uppercase opacity-90">In progress</p>
-          <p className="font-display mt-1 text-xl font-bold">{data.openSession.title}</p>
-          <p className="mt-0.5 flex items-center gap-1 text-sm opacity-90">
-            Back to your session <ChevronRight className="size-4" aria-hidden />
+          <p className="eyebrow" style={{ color: "var(--accent)" }}>
+            In progress
+          </p>
+          <p className="font-display mt-1 text-[24px] leading-tight text-ink">
+            {data.openSession.title}
+          </p>
+          <p className="mt-1 flex items-center gap-1 text-[15px] text-ink-soft">
+            Continue <ChevronRight className="size-4" aria-hidden />
           </p>
         </Link>
       ) : null}
@@ -107,7 +111,7 @@ export default async function LiftPage() {
                         {day.name}
                       </span>
                       {isNext ? (
-                        <span className="shrink-0 rounded-full bg-surface-3 px-2 py-0.5 text-[10px] font-bold tracking-wide text-[var(--pink-deep)] uppercase">
+                        <span className="eyebrow shrink-0" style={{ color: "var(--accent)" }}>
                           Next
                         </span>
                       ) : null}

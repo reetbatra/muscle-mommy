@@ -93,13 +93,15 @@ export function NextWorkoutCard({
     return (
       <Link
         href={`/lift/session/${openSessionId}`}
-        className="glitter-fill shimmer block cursor-pointer rounded-[2px] p-5 text-white shadow-[0_12px_30px_-12px_rgb(219_39_119/0.65)]"
+        className="block cursor-pointer border border-[var(--accent)] p-5 text-ink"
       >
-        <p className="text-xs font-bold tracking-[0.14em] uppercase opacity-90">In progress</p>
-        <p className="font-display mt-1.5 text-2xl leading-tight font-bold">
+        <p className="eyebrow" style={{ color: "var(--accent)" }}>
+          In progress
+        </p>
+        <p className="font-display mt-1.5 text-[26px] leading-tight text-ink">
           Finish your session
         </p>
-        <p className="mt-1 flex items-center gap-1 text-[15px] opacity-90">
+        <p className="mt-1 flex items-center gap-1 text-[15px] text-ink-soft">
           Continue
           <ChevronRight className="size-4" aria-hidden />
         </p>
@@ -153,8 +155,8 @@ export function NextWorkoutCard({
   return (
     <section className="card p-5" aria-labelledby="next-workout-heading">
       <div className="flex items-start gap-4">
-        <div className="glitter-fill flex size-12 shrink-0 items-center justify-center rounded-[2px] text-white">
-          <Dumbbell className="size-6" aria-hidden />
+        <div className="flex size-12 shrink-0 items-center justify-center border border-line bg-surface text-[var(--accent)]">
+          <Dumbbell className="size-6" strokeWidth={1.6} aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-xs font-bold tracking-[0.14em] text-ink-faint uppercase">Next up</p>
