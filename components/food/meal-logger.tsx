@@ -11,6 +11,7 @@ import { Sheet } from "@/components/ui/sheet";
 import { EmptyState } from "@/components/ui/empty-state";
 import { createMeal, deleteMeal, updateMeal } from "@/lib/actions/food";
 import { MEAL_TYPES } from "@/lib/domain/food-schema";
+import { ItemEditor } from "./item-editor";
 import { celebrate } from "@/lib/celebrate";
 import { downscaleImage } from "@/lib/image";
 import { Sparkle } from "@/components/ui/sparkle";
@@ -49,6 +50,7 @@ export function MealLogger({
   const [note, setNote] = useState("");
   const [manualOpen, setManualOpen] = useState(false);
   const [editing, setEditing] = useState<Meal | null>(null);
+  const [correcting, setCorrecting] = useState<Meal | null>(null);
 
   async function onPick(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
@@ -248,6 +250,20 @@ export function MealLogger({
               </div>
             </div>
 
+            {meal.items?.length ? (
+              <ul className="tnum border-t border-line px-4 py-2 text-[13px]">
+                {meal.items.map((item, i) => (
+                  <li key={`${item.name}-${i}`} className="flex justify-between gap-3 py-0.5">
+                    <span className="min-w-0 flex-1 truncate text-ink-soft">
+                      {item.name}
+                      <span className="ml-1.5 text-ink-faint">{item.portion}</span>
+                    </span>
+                    <span className="shrink-0 text-ink">{Math.round(Number(item.kcal))}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
             {meal.ai_note || meal.ai_confidence ? (
               <p className="border-t border-line bg-surface-2 px-4 py-2 text-xs leading-relaxed text-ink-soft">
                 {meal.ai_confidence ? (
@@ -267,17 +283,19 @@ export function MealLogger({
             <div className="flex border-t border-line">
               <button
                 type="button"
-                onClick={() => setEditing(meal)}
+                onClick={() => (meal.items?.length ? setCorrecting(meal) : setEditing(meal))}
                 className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 text-xs font-bold text-ink-soft transition-colors duration-150 hover:bg-surface-2 hover:text-ink"
               >
                 <Pencil className="size-3.5" aria-hidden />
-                Fix the numbers
+                {meal.items?.length ? `Fix ${meal.items.length} items` : "Fix the numbers"}
               </button>
               <DeleteMealButton mealId={meal.id} title={meal.title} />
             </div>
           </article>
         ))}
       </div>
+
+      <ItemEditor meal={correcting} open={correcting !== null} onClose={() => setCorrecting(null)} />
 
       <MealSheet
         open={manualOpen}

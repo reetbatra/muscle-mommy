@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/supabase/server";
 import { MEAL_TYPES } from "@/lib/domain/food-schema";
+import { memoryKey } from "@/lib/domain/food-memory";
 
 const mealSchema = z.object({
   logDate: z.iso.date(),
@@ -123,4 +124,90 @@ export async function deleteFoodMemory(memoryId: string) {
     .eq("user_id", user.id);
   if (error) throw new Error(`Could not forget that: ${error.message}`);
   revalidatePath("/settings");
+}
+
+const itemSchema = z.object({
+  name: z.string().trim().min(1).max(80),
+  portion: z.string().trim().min(1).max(80),
+  kcal: z.number().min(0).max(4000),
+  protein_g: z.number().min(0).max(300),
+  carbs_g: z.number().min(0).max(500),
+  fat_g: z.number().min(0).max(300),
+  fiber_g: z.number().min(0).max(120),
+});
+
+/**
+ * Corrects the individual foods in a meal, not just its total.
+ *
+ * Editing only the total left the items saying one thing and the meal saying
+ * another, and the food memory kept whatever the estimate had guessed. Here the
+ * totals are recomputed from the corrected items and the memory is rewritten to
+ * match, so a correction actually teaches it something.
+ */
+export async function updateMealItems(
+  mealId: string,
+  items: z.infer<typeof itemSchema>[],
+) {
+  const id = z.uuid().parse(mealId);
+  const corrected = z.array(itemSchema).max(20).parse(items);
+  const { supabase, user } = await requireUser();
+
+  const totals = corrected.reduce(
+    (acc, item) => ({
+      kcal: acc.kcal + item.kcal,
+      protein_g: acc.protein_g + item.protein_g,
+      carbs_g: acc.carbs_g + item.carbs_g,
+      fat_g: acc.fat_g + item.fat_g,
+      fiber_g: acc.fiber_g + item.fiber_g,
+    }),
+    { kcal: 0, protein_g: 0, carbs_g: 0, fat_g: 0, fiber_g: 0 },
+  );
+
+  const { error } = await supabase
+    .from("meals")
+    .update({
+      items: corrected,
+      kcal: Math.round(totals.kcal),
+      protein_g: round1(totals.protein_g),
+      carbs_g: round1(totals.carbs_g),
+      fat_g: round1(totals.fat_g),
+      fiber_g: round1(totals.fiber_g),
+      // A hand-corrected meal is no longer an estimate.
+      ai_confidence: "high",
+    })
+    .eq("id", id)
+    .eq("user_id", user.id);
+  if (error) throw new Error(`Could not save those corrections: ${error.message}`);
+
+  // Teach the memory what the corrected portions actually are, and pin them:
+  // a number the user typed outranks anything a model guesses later.
+  for (const item of corrected) {
+    const key = memoryKey(item.name);
+    if (!key) continue;
+    const { error: memoryError } = await supabase.from("food_memories").upsert(
+      {
+        user_id: user.id,
+        key,
+        name: item.name,
+        portion: item.portion,
+        kcal: Math.round(item.kcal),
+        protein_g: round1(item.protein_g),
+        carbs_g: round1(item.carbs_g),
+        fat_g: round1(item.fat_g),
+        fiber_g: round1(item.fiber_g),
+        is_pinned: true,
+        last_used_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,key" },
+    );
+    if (memoryError) throw new Error(`Could not remember that portion: ${memoryError.message}`);
+  }
+
+  revalidatePath("/food");
+  revalidatePath("/today");
+  revalidatePath("/settings");
+}
+
+function round1(n: number) {
+  return Math.round(n * 10) / 10;
 }
