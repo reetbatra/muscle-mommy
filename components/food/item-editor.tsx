@@ -10,13 +10,21 @@ import { Sheet } from "@/components/ui/sheet";
 import { updateMealItems } from "@/lib/actions/food";
 import type { Meal, MealItem } from "@/lib/domain/types";
 
+const MACROS = [
+  { key: "protein_g", label: "P" },
+  { key: "carbs_g", label: "C" },
+  { key: "fat_g", label: "F" },
+  { key: "fiber_g", label: "Fib" },
+] as const;
+
 /**
- * Corrects the individual foods rather than the meal total.
+ * Corrects the individual foods in a meal, macro by macro.
  *
- * Only calories are typed. The other macros scale with the correction, which
- * keeps them coherent without asking for five numbers per food. Halving the
- * calories on a portion halves its protein, carbs and fat too, which is what
- * halving the portion actually does.
+ * Calories are derived from the macros at 4/4/9 rather than typed. That is the
+ * only way the numbers cannot contradict each other: a halwa saved at 200 kcal
+ * with 62g of carbs is not a thing, and editing only the total used to allow
+ * exactly that. It also means fixing an overstated fat figure immediately
+ * lowers the calories, which is what you would expect it to do.
  */
 export function ItemEditor({
   meal,
@@ -38,48 +46,32 @@ export function ItemEditor({
   }
   if (!meal) return null;
 
-  const total = Math.round(items.reduce((n, i) => n + Number(i.kcal || 0), 0));
-  const protein = Math.round(items.reduce((n, i) => n + Number(i.protein_g || 0), 0));
-
-  function setCalories(index: number, kcal: number) {
-    setItems((current) =>
-      current.map((item, i) => {
-        if (i !== index) return item;
-        const previous = Number(item.kcal) || 0;
-        // Scale the macros with the calories, so the item stays internally
-        // consistent. From zero there is nothing to scale, so leave them.
-        const ratio = previous > 0 ? kcal / previous : 1;
-        return {
-          ...item,
-          kcal,
-          protein_g: previous > 0 ? round1(Number(item.protein_g) * ratio) : Number(item.protein_g),
-          carbs_g: previous > 0 ? round1(Number(item.carbs_g) * ratio) : Number(item.carbs_g),
-          fat_g: previous > 0 ? round1(Number(item.fat_g) * ratio) : Number(item.fat_g),
-          fiber_g: previous > 0 ? round1(Number(item.fiber_g) * ratio) : Number(item.fiber_g),
-        };
-      }),
-    );
-  }
+  const withCalories = items.map((item) => ({ ...item, kcal: caloriesOf(item) }));
+  const total = Math.round(withCalories.reduce((n, i) => n + i.kcal, 0));
+  const totalFat = round1(withCalories.reduce((n, i) => n + Number(i.fat_g || 0), 0));
+  const totalProtein = Math.round(withCalories.reduce((n, i) => n + Number(i.protein_g || 0), 0));
 
   return (
     <Sheet
       open={open}
       onClose={onClose}
       title={meal.title}
-      description="Fix any line that looks wrong. What you save here is remembered and never re-estimated."
+      description="Fix any number that looks wrong. Calories follow the macros, and what you save is remembered."
     >
       {items.length === 0 ? (
         <p className="text-[15px] text-ink-soft">
-          This meal has no itemised breakdown, so there is nothing to correct here. Use Fix the
-          numbers instead.
+          This meal has no itemised breakdown, so there is nothing to correct here.
         </p>
       ) : (
         <>
           <ul className="divide-y divide-[var(--border)]">
             {items.map((item, index) => (
-              <li key={`${item.name}-${index}`} className="py-3">
+              <li key={`${item.name}-${index}`} className="py-3.5">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="min-w-0 flex-1 truncate text-[17px] text-ink">{item.name}</p>
+                  <span className="tnum shrink-0 text-[15px] text-ink-faint">
+                    {Math.round(caloriesOf(item))} kcal
+                  </span>
                   <button
                     type="button"
                     aria-label={`Remove ${item.name}`}
@@ -90,39 +82,53 @@ export function ItemEditor({
                   </button>
                 </div>
 
-                <div className="mt-1.5 flex items-center gap-3">
-                  <Input
-                    value={item.portion}
-                    aria-label={`${item.name} portion`}
-                    onChange={(e) =>
-                      setItems((c) =>
-                        c.map((it, i) => (i === index ? { ...it, portion: e.target.value } : it)),
-                      )
-                    }
-                    className="h-11 flex-1 text-[15px]"
-                  />
-                  <div className="flex w-[122px] shrink-0 items-center gap-1.5">
-                    <Input
-                      type="number"
-                      inputMode="numeric"
-                      value={String(Math.round(Number(item.kcal)))}
-                      aria-label={`${item.name} calories`}
-                      onChange={(e) => setCalories(index, Math.max(0, Number(e.target.value) || 0))}
-                      className="tnum h-11 text-right text-[15px]"
-                    />
-                    <span className="text-[13px] text-ink-faint">kcal</span>
-                  </div>
+                <Input
+                  value={item.portion}
+                  aria-label={`${item.name} portion`}
+                  onChange={(e) =>
+                    setItems((c) =>
+                      c.map((it, i) => (i === index ? { ...it, portion: e.target.value } : it)),
+                    )
+                  }
+                  className="mt-2 h-10 text-[15px]"
+                />
+
+                <div className="mt-2 grid grid-cols-4 gap-2">
+                  {MACROS.map((macro) => (
+                    <label key={macro.key} className="block">
+                      <span className="eyebrow block">{macro.label}</span>
+                      <Input
+                        type="number"
+                        inputMode="decimal"
+                        step="0.5"
+                        aria-label={`${item.name} ${macro.label}`}
+                        value={String(Number(item[macro.key]) || 0)}
+                        onChange={(e) =>
+                          setItems((c) =>
+                            c.map((it, i) =>
+                              i === index
+                                ? { ...it, [macro.key]: Math.max(0, Number(e.target.value) || 0) }
+                                : it,
+                            ),
+                          )
+                        }
+                        className="tnum mt-1 h-11 px-2 text-center text-[15px]"
+                      />
+                    </label>
+                  ))}
                 </div>
               </li>
             ))}
           </ul>
 
-          <div className="tnum mt-4 flex items-baseline justify-between border-t border-line pt-4">
-            <span className="text-[15px] text-ink-soft">New total</span>
-            <span className="font-display text-[24px] text-ink">
-              {total} kcal
-              <span className="ml-2 text-[15px] text-ink-faint">{protein}g protein</span>
-            </span>
+          <div className="mt-4 border-t border-line pt-4">
+            <div className="tnum flex items-baseline justify-between">
+              <span className="text-[15px] text-ink-soft">New total</span>
+              <span className="font-display text-[26px] text-ink">{total} kcal</span>
+            </div>
+            <p className="tnum mt-1 text-right text-[14px] text-ink-faint">
+              {totalProtein}g protein · {totalFat}g fat
+            </p>
           </div>
 
           <Button
@@ -134,7 +140,7 @@ export function ItemEditor({
             onClick={() =>
               startTransition(async () => {
                 try {
-                  await updateMealItems(meal.id, items);
+                  await updateMealItems(meal.id, withCalories);
                   toast.success("Saved, and those portions are pinned now.");
                   onClose();
                   router.refresh();
@@ -149,6 +155,13 @@ export function ItemEditor({
         </>
       )}
     </Sheet>
+  );
+}
+
+/** Atwater factors. Fibre is already inside the carbohydrate figure. */
+function caloriesOf(item: MealItem): number {
+  return (
+    Number(item.protein_g || 0) * 4 + Number(item.carbs_g || 0) * 4 + Number(item.fat_g || 0) * 9
   );
 }
 

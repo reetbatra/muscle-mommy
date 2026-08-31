@@ -24,6 +24,7 @@ import { HealthSync } from "@/components/settings/health-sync";
 import { HabitsManager } from "@/components/settings/habits-manager";
 import { HevySync } from "@/components/settings/hevy-sync";
 import { FoodMemory, type MemoryRow } from "@/components/settings/food-memory";
+import type { CookingOil } from "@/lib/domain/food-schema";
 import { PasswordForm } from "@/components/settings/password-form";
 import { getHevyStatus } from "@/lib/actions/hevy";
 import type { Exercise } from "@/lib/domain/types";
@@ -143,7 +144,10 @@ export default async function SettingsPage() {
               : "Nothing learned yet"
           }
         >
-          <FoodMemory memories={(memories ?? []) as MemoryRow[]} />
+          <FoodMemory
+            memories={(memories ?? []) as MemoryRow[]}
+            cookingOil={(ctx.profile.cooking_oil ?? "light") as CookingOil}
+          />
         </SettingsSection>
 
         <SettingsSection

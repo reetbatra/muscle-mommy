@@ -31,6 +31,7 @@ export async function updateGoals(input: z.infer<typeof goalsSchema>) {
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(1).max(40),
+  cooking_oil: z.enum(["none", "spray", "light", "moderate", "generous"]).optional(),
   timezone: z.string().min(1).max(60),
   weight_unit: z.enum(["kg", "lb"]),
   dumbbell_rack: z.array(z.number().min(0.5).max(80)).min(1).max(40),
@@ -289,4 +290,17 @@ export async function setPassword(password: string) {
 
   revalidatePath("/settings");
   return { email: user.email ?? null };
+}
+
+
+/** How much oil goes in the pan. A fact about the kitchen, not a guess. */
+export async function setCookingOil(value: string) {
+  const oil = z.enum(["none", "spray", "light", "moderate", "generous"]).parse(value);
+  const { supabase, user } = await requireUser();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ cooking_oil: oil })
+    .eq("id", user.id);
+  if (error) throw new Error(`Could not save that: ${error.message}`);
+  revalidatePath("/settings");
 }

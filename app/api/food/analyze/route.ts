@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { generateText, Output } from "ai";
 import { foodModel, hasFoodModel } from "@/lib/ai";
 import { createClient } from "@/lib/supabase/server";
-import { buildAnalysisPrompt, mealAnalysisSchema } from "@/lib/domain/food-schema";
+import { buildAnalysisPrompt, mealAnalysisSchema, type CookingOil } from "@/lib/domain/food-schema";
 import { sumMeals } from "@/lib/domain/macros";
 import {
   formatMemoriesForPrompt,
@@ -82,6 +82,12 @@ export async function POST(request: Request) {
     }
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("cooking_oil")
+    .eq("id", user.id)
+    .maybeSingle();
+
   // What this person usually eats, and in what amounts.
   const { data: memoryRows } = await supabase
     .from("food_memories")
@@ -118,6 +124,7 @@ export async function POST(request: Request) {
       system: buildAnalysisPrompt({
         memories: formatMemoriesForPrompt(memories),
         note: note || null,
+        cookingOil: (profile?.cooking_oil ?? "light") as CookingOil,
       }),
       messages: [{ role: "user", content: userContent }],
     });

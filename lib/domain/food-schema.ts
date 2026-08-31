@@ -33,7 +33,7 @@ Break the plate into the separate foods you can actually see. For each one, stat
 
 Rules:
 - Estimate portions from visual cues: plate and bowl size, cutlery, hands, cans and packets.
-- Add cooking fat only where you can see evidence of it: a visible sheen, a fried surface, oil pooling in a curry. Do not add it as a blanket allowance, and when you do add it, say so in the note with the amount you assumed. Guessing fat upward on every dish quietly inflates the whole day.
+- Cooking fat is easy to miss and easy to overstate. For a dish that looks home-cooked, use the amount stated under "how this person cooks" below rather than a generic allowance, and say in the note how much you assumed. If the food is clearly fried or swimming in oil, use what you can actually see instead.
 - Cover the cuisine you actually see, including South Asian, East Asian, Middle Eastern and Mediterranean dishes. Name dishes the way the person eating them would.
 - If a food is ambiguous, choose the more common preparation and say so in the note.
 - Prefer the smaller plausible portion when the size is genuinely unclear. An underestimate the person can correct is better than an overestimate they will not notice.
@@ -53,8 +53,32 @@ alone and mark confidence low when the portion is not stated.`;
  * block and the user's note change on every call, and the base prompt does
  * not.
  */
-export function buildAnalysisPrompt(options: { memories: string; note: string | null }): string {
+export const COOKING_OIL = {
+  none: { label: "No added oil", grams: 0, blurb: "Nothing in the pan" },
+  spray: { label: "A spray", grams: 1.5, blurb: "One spray of oil per dish" },
+  light: { label: "A teaspoon", grams: 5, blurb: "About a teaspoon per dish" },
+  moderate: { label: "A tablespoon", grams: 14, blurb: "About a tablespoon per dish" },
+  generous: { label: "Two tablespoons", grams: 28, blurb: "A generous pour" },
+} as const;
+
+export type CookingOil = keyof typeof COOKING_OIL;
+
+export function buildAnalysisPrompt(options: {
+  memories: string;
+  note: string | null;
+  cookingOil?: CookingOil;
+}): string {
   const parts = [ANALYSIS_PROMPT];
+
+  const oil = COOKING_OIL[options.cookingOil ?? "light"];
+  parts.push(
+    "",
+    "How this person cooks:",
+    oil.grams === 0
+      ? "- They cook without added oil. Do not add any unless the dish is visibly fried."
+      : `- They cook with roughly ${oil.grams}g of oil per dish, about ${oil.label.toLowerCase()}. Use that, not a generic allowance. That is roughly ${Math.round(oil.grams * 9)} kcal, not a tablespoon's ${Math.round(14 * 9)}.`,
+    "- If they state a different amount of oil or butter, that wins.",
+  );
 
   if (options.memories) {
     parts.push("", options.memories);

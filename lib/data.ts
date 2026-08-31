@@ -22,6 +22,7 @@ export type SessionContext = {
   userId: string;
   email: string | null;
   profile: Profile & {
+    cooking_oil: string;
     dumbbell_rack: number[];
     machine_increment_kg: number;
     barbell_increment_kg: number;

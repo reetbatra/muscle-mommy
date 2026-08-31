@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { Pin, PinOff, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteFoodMemory, setFoodMemoryPinned } from "@/lib/actions/food";
+import { setCookingOil } from "@/lib/actions/settings";
+import { COOKING_OIL, type CookingOil } from "@/lib/domain/food-schema";
+import { Select } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
 
 export type MemoryRow = {
@@ -17,21 +20,27 @@ export type MemoryRow = {
   is_pinned: boolean;
 };
 
-export function FoodMemory({ memories }: { memories: MemoryRow[] }) {
+export function FoodMemory({
+  memories,
+  cookingOil,
+}: {
+  memories: MemoryRow[];
+  cookingOil: CookingOil;
+}) {
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  if (memories.length === 0) {
-    return (
-      <p className="text-[15px] leading-relaxed text-ink-soft">
-        Nothing learned yet. Log a few meals and the portions you actually eat show up here, ready
-        to be reused the next time the same food turns up in a photo.
-      </p>
-    );
-  }
-
   return (
     <div>
+      <OilSetting value={cookingOil} onDone={() => router.refresh()} />
+
+      {memories.length === 0 ? (
+        <p className="mt-5 border-t border-line pt-5 text-[15px] leading-relaxed text-ink-soft">
+          Nothing learned yet. Log a few meals and the portions you actually eat show up here,
+          ready to be reused the next time the same food turns up in a photo.
+        </p>
+      ) : (
+        <div className="mt-5 border-t border-line pt-5">
       <p className="text-[15px] leading-relaxed text-ink-soft">
         Portions learned from what you have logged. Pin one and it is treated as fact rather than
         re-estimated every time.
@@ -70,6 +79,50 @@ export function FoodMemory({ memories }: { memories: MemoryRow[] }) {
           </li>
         ))}
       </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Invisible cooking fat is one of the biggest errors in estimating a
+ * home-cooked meal, and it is not something the app should be guessing.
+ * Assuming a tablespoon for someone who uses one spray adds about 110 kcal a
+ * dish, quietly, every time.
+ */
+function OilSetting({ value, onDone }: { value: CookingOil; onDone: () => void }) {
+  const [pending, startTransition] = useTransition();
+
+  return (
+    <div>
+      <p className="eyebrow">How you cook</p>
+      <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">
+        Used for oil the camera cannot see. Say a different amount when you log and that wins.
+      </p>
+      <Select
+        className="mt-3"
+        value={value}
+        disabled={pending}
+        aria-label="How much oil you cook with"
+        onChange={(e) =>
+          startTransition(async () => {
+            try {
+              await setCookingOil(e.target.value);
+              toast.success("Saved.");
+              onDone();
+            } catch (error) {
+              toast.error(error instanceof Error ? error.message : "Could not save that.");
+            }
+          })
+        }
+      >
+        {(Object.keys(COOKING_OIL) as CookingOil[]).map((key) => (
+          <option key={key} value={key}>
+            {COOKING_OIL[key].blurb} · about {Math.round(COOKING_OIL[key].grams * 9)} kcal
+          </option>
+        ))}
+      </Select>
     </div>
   );
 }
