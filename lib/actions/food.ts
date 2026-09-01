@@ -147,9 +147,12 @@ const itemSchema = z.object({
 export async function updateMealItems(
   mealId: string,
   items: z.infer<typeof itemSchema>[],
+  meta?: { title?: string; mealType?: (typeof MEAL_TYPES)[number] },
 ) {
   const id = z.uuid().parse(mealId);
   const corrected = z.array(itemSchema).max(20).parse(items);
+  const title = meta?.title ? z.string().trim().min(1).max(70).parse(meta.title) : undefined;
+  const mealType = meta?.mealType ? z.enum(MEAL_TYPES).parse(meta.mealType) : undefined;
   const { supabase, user } = await requireUser();
 
   const totals = corrected.reduce(
@@ -166,6 +169,8 @@ export async function updateMealItems(
   const { error } = await supabase
     .from("meals")
     .update({
+      ...(title ? { title } : {}),
+      ...(mealType ? { meal_type: mealType } : {}),
       items: corrected,
       kcal: Math.round(totals.kcal),
       protein_g: round1(totals.protein_g),

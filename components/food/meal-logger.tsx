@@ -3,13 +3,13 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Camera, Image as ImageIcon, Loader2, Pencil, Trash2, Utensils } from "lucide-react";
+import { Image as ImageIcon, Loader2, Pencil, Trash2, Utensils } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FieldRow, Input, NumberStepper, Select } from "@/components/ui/field";
 import { Sheet } from "@/components/ui/sheet";
 import { EmptyState } from "@/components/ui/empty-state";
-import { createMeal, deleteMeal, updateMeal } from "@/lib/actions/food";
+import { createMeal, deleteMeal } from "@/lib/actions/food";
 import { MEAL_TYPES } from "@/lib/domain/food-schema";
 import { ItemEditor } from "./item-editor";
 import { celebrate } from "@/lib/celebrate";
@@ -49,7 +49,6 @@ export function MealLogger({
   const [preparing, setPreparing] = useState(false);
   const [note, setNote] = useState("");
   const [manualOpen, setManualOpen] = useState(false);
-  const [editing, setEditing] = useState<Meal | null>(null);
   const [correcting, setCorrecting] = useState<Meal | null>(null);
 
   async function onPick(event: React.ChangeEvent<HTMLInputElement>) {
@@ -283,11 +282,11 @@ export function MealLogger({
             <div className="flex border-t border-line">
               <button
                 type="button"
-                onClick={() => (meal.items?.length ? setCorrecting(meal) : setEditing(meal))}
+                onClick={() => setCorrecting(meal)}
                 className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 text-xs font-bold text-ink-soft transition-colors duration-150 hover:bg-surface-2 hover:text-ink"
               >
                 <Pencil className="size-3.5" aria-hidden />
-                {meal.items?.length ? `Fix ${meal.items.length} items` : "Fix the numbers"}
+                Edit
               </button>
               <DeleteMealButton mealId={meal.id} title={meal.title} />
             </div>
@@ -309,19 +308,6 @@ export function MealLogger({
         }}
       />
 
-      <MealSheet
-        open={editing !== null}
-        onClose={() => setEditing(null)}
-        title="Fix the numbers"
-        today={today}
-        meal={editing}
-        onSubmit={async (values) => {
-          if (!editing) return;
-          await updateMeal(editing.id, { ...values, logDate: editing.log_date });
-          setEditing(null);
-          router.refresh();
-        }}
-      />
     </>
   );
 }
