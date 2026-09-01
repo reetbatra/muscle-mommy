@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { getRoutine, getSessionContext, getTodayData, getWeekDays } from "@/lib/data";
-import { addDaysISO } from "@/lib/domain/dates";
+import { addDaysISO, resolveViewedDate } from "@/lib/domain/dates";
 import { energyBalance, macroLines, sumMeals } from "@/lib/domain/macros";
+import { prettyDate } from "@/lib/domain/dates";
 import { weeklyBalance } from "@/lib/domain/week";
 import { averageCycleLength, cycleDayFor, derivePeriodStarts, phaseFor } from "@/lib/domain/cycle";
 import { todayState } from "@/lib/domain/schedule";
@@ -13,20 +14,29 @@ import { CycleChip } from "@/components/today/cycle-chip";
 import { PagesRead } from "@/components/today/pages-read";
 import { WeekCard } from "@/components/today/week-card";
 import { Sparkle } from "@/components/ui/sparkle";
+import { DateNav } from "@/components/date-nav";
 
 export const metadata: Metadata = { title: "Today" };
 export const dynamic = "force-dynamic";
 
-export default async function TodayPage() {
+export default async function TodayPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ d?: string }>;
+}) {
   const ctx = await getSessionContext();
+  const { d } = await searchParams;
+  // Any day inside the editable window, defaulting to today.
+  const viewed = resolveViewedDate(d, ctx.today);
+  const isToday = viewed === ctx.today;
   const [data, routine, weekDays] = await Promise.all([
-    getTodayData(ctx.today, addDaysISO(ctx.today, -90)),
+    getTodayData(viewed, addDaysISO(viewed, -90)),
     getRoutine(),
-    getWeekDays(ctx.today),
+    getWeekDays(viewed),
   ]);
 
   const week = weeklyBalance({
-    today: ctx.today,
+    today: viewed,
     days: weekDays,
     calorieTarget: ctx.goals.calorie_target,
     maintenanceKcal: ctx.goals.maintenance_kcal,
@@ -50,7 +60,7 @@ export default async function TodayPage() {
   });
 
   const periodStarts = derivePeriodStarts(data.periodFlow);
-  const cycleDay = cycleDayFor(ctx.today, periodStarts);
+  const cycleDay = cycleDayFor(viewed, periodStarts);
   const phase = phaseFor(cycleDay, averageCycleLength(periodStarts));
 
   const scheduleDays = routine.map((d) => ({
@@ -82,33 +92,45 @@ export default async function TodayPage() {
     <Screen>
       <header className="flex items-start justify-between gap-3 pt-6 pb-5">
         <div className="min-w-0">
-          <p className="eyebrow">{formatToday(ctx.today, ctx.profile.timezone)}</p>
-          <h1 className="font-display mt-2 text-[38px] leading-[1.05] text-ink">
-            {greeting()},
-          </h1>
-          <p className="hand mt-1.5 flex items-center gap-2.5 text-[32px] leading-none">
-            {firstName}
-            <Sparkle size={14} twinkle />
-          </p>
+          <p className="eyebrow">{formatToday(viewed, ctx.profile.timezone)}</p>
+          {isToday ? (
+            <>
+              <h1 className="font-display mt-2 text-[38px] leading-[1.05] text-ink">
+                {greeting()},
+              </h1>
+              <p className="hand mt-1.5 flex items-center gap-2.5 text-[32px] leading-none">
+                {firstName}
+                <Sparkle size={14} twinkle />
+              </p>
+            </>
+          ) : (
+            <h1 className="font-display mt-2 text-[34px] leading-[1.05] text-ink">
+              {prettyDate(viewed, ctx.today)}
+            </h1>
+          )}
         </div>
         <div className="pt-1">
           <CycleChip
             phase={phase}
             cycleDay={cycleDay}
-            today={ctx.today}
+            today={viewed}
             currentFlow={data.cycle?.flow ?? "none"}
             currentSymptoms={data.cycle?.symptoms ?? []}
           />
         </div>
       </header>
 
+      <DateNav date={viewed} today={ctx.today} className="-ml-2.5 pb-4" />
+
       <div className="space-y-4">
-        <NextWorkoutCard
+        {isToday ? (
+          <NextWorkoutCard
           day={upcomingFull}
           openSessionId={data.openSession?.id ?? null}
           state={state.kind}
-          exerciseCount={upcomingFull?.routine_exercises.length ?? 0}
-        />
+            exerciseCount={upcomingFull?.routine_exercises.length ?? 0}
+          />
+        ) : null}
 
         <WeekCard balance={week} />
 
@@ -126,7 +148,7 @@ export default async function TodayPage() {
         />
 
         <PagesRead
-          today={ctx.today}
+          today={viewed}
           initialPages={data.health?.pages_read ?? 0}
           target={ctx.goals.pages_target}
         />
@@ -147,7 +169,7 @@ export default async function TodayPage() {
             habits={data.habits}
             counts={data.habitCounts}
             history={history}
-            today={ctx.today}
+            today={viewed}
           />
         </section>
       </div>

@@ -9,7 +9,14 @@ import {
 } from "../macros";
 import { dayCompletion, streakLength } from "../habits";
 import { averageCycleLength, cycleDayFor, derivePeriodStarts, phaseFor } from "../cycle";
-import { addDaysISO, daysBetweenISO, isoRange, prettyDate } from "../dates";
+import {
+  addDaysISO,
+  daysBetweenISO,
+  isEditableDate,
+  isoRange,
+  prettyDate,
+  resolveViewedDate,
+} from "../dates";
 import { nextRoutineDay } from "../schedule";
 
 describe("sumMeals", () => {
@@ -224,5 +231,33 @@ describe("energyBalance with Apple Health resting energy", () => {
     });
     expect(result.burnSource).toBe("estimate");
     expect(result.burned).toBe(2280);
+  });
+});
+
+describe("resolveViewedDate", () => {
+  const today = "2026-09-01";
+
+  it("defaults to today when nothing is asked for", () => {
+    expect(resolveViewedDate(undefined, today)).toBe(today);
+  });
+
+  it("shows a past day that was asked for", () => {
+    expect(resolveViewedDate("2026-08-31", today)).toBe("2026-08-31");
+  });
+
+  it("refuses a future day", () => {
+    expect(resolveViewedDate("2026-09-02", today)).toBe(today);
+  });
+
+  it("refuses anything that is not a date", () => {
+    expect(resolveViewedDate("yesterday", today)).toBe(today);
+    expect(resolveViewedDate("2026-13-45", today)).toBe(today);
+    expect(resolveViewedDate("", today)).toBe(today);
+  });
+
+  it("allows editing inside the window but not beyond it", () => {
+    expect(isEditableDate("2026-09-01", today)).toBe(true);
+    expect(isEditableDate("2026-08-01", today)).toBe(true);
+    expect(isEditableDate("2026-01-01", today)).toBe(false);
   });
 });

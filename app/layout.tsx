@@ -52,7 +52,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   // One colour, because the app is light in every case.
-  themeColor: "#fbf9f4",
+  themeColor: "#fdf6f7",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

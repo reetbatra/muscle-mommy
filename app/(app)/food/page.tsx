@@ -1,26 +1,33 @@
 import type { Metadata } from "next";
 import { getSessionContext, getTodayData, getWeekDays } from "@/lib/data";
 import { signMealPhotos } from "@/lib/actions/food";
-import { addDaysISO } from "@/lib/domain/dates";
+import { addDaysISO, prettyDate, resolveViewedDate } from "@/lib/domain/dates";
 import { energyBalance, macroLines, sumMeals } from "@/lib/domain/macros";
 import { weeklyBalance } from "@/lib/domain/week";
 import { Screen, ScreenHeader } from "@/components/screen";
 import { EnergyCard } from "@/components/today/energy-card";
 import { MealLogger } from "@/components/food/meal-logger";
 import { WeekCard } from "@/components/today/week-card";
+import { DateNav } from "@/components/date-nav";
 
 export const metadata: Metadata = { title: "Food" };
 export const dynamic = "force-dynamic";
 
-export default async function FoodPage() {
+export default async function FoodPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ d?: string }>;
+}) {
   const ctx = await getSessionContext();
+  const { d } = await searchParams;
+  const viewed = resolveViewedDate(d, ctx.today);
   const [data, weekDays] = await Promise.all([
-    getTodayData(ctx.today, addDaysISO(ctx.today, -1)),
-    getWeekDays(ctx.today),
+    getTodayData(viewed, addDaysISO(viewed, -1)),
+    getWeekDays(viewed),
   ]);
 
   const week = weeklyBalance({
-    today: ctx.today,
+    today: viewed,
     days: weekDays,
     calorieTarget: ctx.goals.calorie_target,
     maintenanceKcal: ctx.goals.maintenance_kcal,
@@ -54,13 +61,15 @@ export default async function FoodPage() {
             ? "Nothing logged yet"
             : `${Math.round(week.perDayRemaining)} kcal a day to stay on the week`
         }
-        title="Food"
+        title={viewed === ctx.today ? "Food" : prettyDate(viewed, ctx.today)}
       />
+
+      <DateNav date={viewed} today={ctx.today} className="-ml-2.5 pb-4" />
 
       <div className="space-y-4">
         <WeekCard balance={week} />
         <EnergyCard balance={balance} macros={macros} calorieTarget={ctx.goals.calorie_target} />
-        <MealLogger meals={data.meals} photoUrls={photoUrls} today={ctx.today} />
+        <MealLogger meals={data.meals} photoUrls={photoUrls} today={viewed} />
       </div>
     </Screen>
   );

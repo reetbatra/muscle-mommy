@@ -55,3 +55,24 @@ export function safeTimezone(candidate: string | null | undefined): string {
     return "UTC";
   }
 }
+
+/**
+ * The day a screen is showing.
+ *
+ * Anything that is not a real past-or-present date falls back to today, so a
+ * hand-edited or stale URL can never put the app into a day that does not
+ * exist or has not happened.
+ */
+export function resolveViewedDate(candidate: string | undefined, todayISO: string): string {
+  if (!candidate || !/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return todayISO;
+  if (Number.isNaN(Date.parse(`${candidate}T00:00:00Z`))) return todayISO;
+  return candidate > todayISO ? todayISO : candidate;
+}
+
+/** How far back a day can be edited. Beyond this the numbers are archaeology. */
+export const EDITABLE_DAYS = 60;
+
+export function isEditableDate(iso: string, todayISO: string): boolean {
+  const back = daysBetweenISO(iso, todayISO);
+  return back >= 0 && back <= EDITABLE_DAYS;
+}

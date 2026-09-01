@@ -21,8 +21,8 @@ export default function Icon() {
           alignItems: "center",
           justifyContent: "center",
           borderRadius: 7,
-          background: "#fbf9f4",
-          border: "1px solid #ded5c4",
+          background: "#fdf6f7",
+          border: "1px solid #f0d5de",
           position: "relative",
         }}
       >
@@ -31,7 +31,7 @@ export default function Icon() {
           height={25}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#8a6b33"
+          stroke="#b0466e"
           strokeWidth={3.2}
           strokeLinecap="round"
           strokeLinejoin="round"

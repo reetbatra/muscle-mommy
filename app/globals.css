@@ -14,45 +14,43 @@
 :root {
   color-scheme: light;
 
-  --bg: #fbf9f4;
-  --bg-tint: #f6f2e9;
-  --surface: #fdfcf9;
-  --surface-2: #f3efe5;
-  --surface-3: #eae3d6;
-  --border: #e5ded2;
-  --border-strong: #d3c9b8;
+  /* Pastels carry the surfaces. Nothing you read is a pastel: a baby pink is
+     about 2:1 against this ground, which is unreadable, so text and thin marks
+     use the deeper rose. Every value below is checked against #fdf6f7. */
 
-  --ink: #1a1713;
-  --ink-soft: #6e655b;
-  --ink-faint: #9c9184;
+  --bg: #fdf6f7;
+  --bg-tint: #fbeef1;
+  --surface: #fffafb;
+  --surface-2: #fbedf1;         /* baby pink */
+  --surface-3: #f6dfe6;
+  --surface-warm: #fdf5dd;      /* baby yellow, for the odd highlight */
+  --border: #f3dfe5;
+  --border-strong: #e6c6d1;
 
-  --accent: #8a6b33;
-  --accent-soft: #b08b4a;
-  --good: #4f6b45;
-  --warn: #9a6b2f;
-  --bad: #9c3a32;
+  --ink: #3a2730;               /* 13.0:1 */
+  --ink-soft: #7a5f6a;          /*  5.4:1 */
+  --ink-faint: #9b7f8c;         /*  3.4:1, marks and labels only */
 
-  --ring: #8a6b33;
-  --grid: rgb(26 23 19 / 0.045);
+  --accent: #b0466e;            /*  5.0:1 */
+  --accent-soft: #d98fae;       /* pastel fill, never text */
+  --good: #4f7a5c;              /*  4.6:1 */
+  --warn: #a45a33;              /*  4.8:1 */
+  --bad: #b03a4e;               /*  5.5:1 */
 
-  /* Validated against this surface: CVD delta E 24.2, normal-vision 26.9,
-     both marks over 3:1. Re-run the validator before changing either. */
-  --chart-1: #a85f1b;
+  --ring: #b0466e;
+  --grid: rgb(58 39 48 / 0.05);
+
+  /* Validated on this surface: CVD delta E 12.5, normal-vision 23.2,
+     all three over 3:1. Re-run the validator before changing any of them. */
+  --chart-1: #c04a76;
   --chart-2: #2a6fc4;
-  /* Third slot for the macro split. Validated on adjacent pairs, which is
-     what a stacked bar needs: CVD delta E 22.6, normal-vision 23.2. */
   --chart-3: #3f7d33;
-  --chart-grid: #e8e1d4;
-  --chart-axis: #9c9184;
+  --chart-grid: #f0dde3;
+  --chart-axis: #9b7f8c;
 
   --shadow-soft: none;
-  --shadow-lift: 0 1px 2px rgb(26 23 19 / 0.06), 0 12px 28px -18px rgb(26 23 19 / 0.35);
+  --shadow-lift: 0 1px 2px rgb(58 39 48 / 0.06), 0 12px 28px -18px rgb(58 39 48 / 0.3);
 }
-
-/* Deliberately light only.
-   The paper ground is the design, and an automatic charcoal flip on a phone
-   set to dark mode is not a second theme, it is a different app. color-scheme
-   is pinned so the OS does not repaint form controls dark underneath it. */
 
 @theme inline {
   --color-bg: var(--bg);
@@ -67,6 +65,7 @@
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
 
+  --color-surface-warm: var(--surface-warm);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
   --color-good: var(--good);

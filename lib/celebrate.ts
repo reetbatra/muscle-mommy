@@ -1,7 +1,7 @@
 import confetti from "canvas-confetti";
 
 /** Bronze, blue and green, the same three the charts use. */
-const PALETTE = ["#8a6b33", "#a85f1b", "#2a6fc4", "#3f7d33", "#fbf9f4"];
+const PALETTE = ["#c04a76", "#d98fae", "#2a6fc4", "#f2d06b", "#fffafb"];
 
 function motionAllowed() {
   if (typeof window === "undefined") return false;
