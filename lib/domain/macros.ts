@@ -96,11 +96,73 @@ function statusFor(pct: number, kind: "floor" | "ceiling"): MacroStatus {
 
 export type EnergyVerdict = "pending" | "deficit" | "maintenance" | "surplus";
 
+/** Whether the burn figure was measured by Apple Health or stood in for. */
+export type BurnSource = "health" | "estimate";
+
+export type DayBurn = {
+  total: number;
+  source: BurnSource;
+  /** Resting energy, measured when Health knows it, estimated otherwise. */
+  resting: number;
+  /** Active energy on top. Zero on the estimate path, deliberately. */
+  active: number;
+  /**
+   * True when active energy was known but had to be dropped because resting
+   * energy is missing. The UI says so rather than silently losing the number.
+   */
+  activeIgnored: boolean;
+};
+
+/**
+ * What a day actually cost.
+ *
+ * Resting energy is the honest base. When it is known -- synced from Apple
+ * Health or typed in by hand -- active energy adds on top and the total is a
+ * measurement rather than a guess.
+ *
+ * When resting is missing, the maintenance figure stands in and active energy
+ * is deliberately NOT added to it. Maintenance is a whole-day number that
+ * already assumes ordinary walking about, so stacking Apple Health's active
+ * energy on top counts the same movement twice and invents a deficit that
+ * never happened. Typing resting energy in once is what unlocks the real
+ * number, and the movement card asks for it.
+ */
+export function dayBurn(input: {
+  maintenanceKcal: number;
+  activeKcal?: number | null;
+  basalKcal?: number | null;
+}): DayBurn {
+  const { maintenanceKcal, activeKcal, basalKcal } = input;
+  const hasHealthBasal = typeof basalKcal === "number" && basalKcal > 0;
+  const active = typeof activeKcal === "number" && activeKcal > 0 ? activeKcal : 0;
+  if (!hasHealthBasal) {
+    return {
+      total: maintenanceKcal,
+      source: "estimate",
+      resting: maintenanceKcal,
+      active: 0,
+      activeIgnored: active > 0,
+    };
+  }
+  return {
+    total: basalKcal + active,
+    source: "health",
+    resting: basalKcal,
+    active,
+    activeIgnored: false,
+  };
+}
+
 export type EnergyBalance = {
   consumed: number;
   burned: number;
   /** Whether the burn came from Apple Health or from the BMR estimate. */
-  burnSource: "health" | "estimate";
+  burnSource: BurnSource;
+  /** The two halves of the burn, so the UI can show its working. */
+  restingKcal: number;
+  activeKcal: number;
+  /** Active energy was supplied but could not be counted. See dayBurn. */
+  activeIgnored: boolean;
   net: number;
   verdict: EnergyVerdict;
   headline: string;
@@ -110,10 +172,8 @@ export type EnergyBalance = {
 };
 
 /**
- * Apple Health reports resting and active energy separately, and together they
- * are a measurement rather than a guess. When resting energy is missing the
- * Mifflin-St Jeor maintenance figure stands in, which is conservative rather
- * than flattering.
+ * Eaten against burned, for one day. See dayBurn for why active energy only
+ * counts once resting energy is known.
  */
 export function energyBalance(input: {
   consumed: number;
@@ -123,60 +183,53 @@ export function energyBalance(input: {
   calorieTarget: number;
 }): EnergyBalance {
   const { consumed, maintenanceKcal, activeKcal, basalKcal, calorieTarget } = input;
-  const hasHealthBasal = typeof basalKcal === "number" && basalKcal > 0;
-  const burnSource: "health" | "estimate" = hasHealthBasal ? "health" : "estimate";
-  const burned = (hasHealthBasal ? basalKcal : maintenanceKcal) + activeKcal;
+  const burn = dayBurn({ maintenanceKcal, activeKcal, basalKcal });
+  const burned = burn.total;
   const net = consumed - burned;
   const remainingToTarget = calorieTarget - consumed;
+  const shared = {
+    consumed,
+    burned,
+    burnSource: burn.source,
+    restingKcal: burn.resting,
+    activeKcal: burn.active,
+    activeIgnored: burn.activeIgnored,
+    net,
+    remainingToTarget,
+  };
 
   if (consumed <= 0) {
     return {
-      consumed,
-      burned,
-      burnSource,
-      net,
+      ...shared,
       verdict: "pending",
       headline: "Nothing logged yet",
       detail: `Target is ${Math.round(calorieTarget)} kcal today.`,
-      remainingToTarget,
     };
   }
 
   if (net <= -200) {
     return {
-      consumed,
-      burned,
-      burnSource,
-      net,
+      ...shared,
       verdict: "deficit",
       headline: `${Math.abs(Math.round(net))} kcal deficit`,
       detail: `Ate ${Math.round(consumed)}, burned about ${Math.round(burned)}.`,
-      remainingToTarget,
     };
   }
 
   if (net < 200) {
     return {
-      consumed,
-      burned,
-      burnSource,
-      net,
+      ...shared,
       verdict: "maintenance",
       headline: "Roughly maintenance",
       detail: `${Math.round(consumed)} in, about ${Math.round(burned)} out.`,
-      remainingToTarget,
     };
   }
 
   return {
-    consumed,
-    burned,
-    burnSource,
-    net,
+    ...shared,
     verdict: "surplus",
     headline: `${Math.round(net)} kcal surplus`,
     detail: `Ate ${Math.round(consumed)}, burned about ${Math.round(burned)}.`,
-    remainingToTarget,
   };
 }
 

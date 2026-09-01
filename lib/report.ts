@@ -2,7 +2,7 @@ import "server-only";
 import { requireUser } from "@/lib/supabase/server";
 import { addDaysISO, isoRange } from "@/lib/domain/dates";
 import { compareSessions, overloadScore, totalVolume, type LoggedSet } from "@/lib/domain/overload";
-import { sumMeals, type MacroTotals } from "@/lib/domain/macros";
+import { dayBurn, sumMeals, type MacroTotals } from "@/lib/domain/macros";
 
 export type ReportPeriod = "week" | "month";
 
@@ -105,7 +105,9 @@ export async function getReport(
       label: shortDate(date),
       eaten: kcalByDate.get(date) ?? null,
       burned:
-        basal !== null || active !== null ? (basal ?? maintenanceKcal) + (active ?? 0) : null,
+        basal !== null || active !== null
+          ? dayBurn({ maintenanceKcal, basalKcal: basal, activeKcal: active }).total
+          : null,
       steps: h?.steps ?? null,
     };
   });

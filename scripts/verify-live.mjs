@@ -211,6 +211,62 @@ if (verified?.session) {
   });
   check("but not one pointed at somebody else", !!forgeError, forgeError?.message ?? "IT SUCCEEDED");
 
+  /*
+   * Manual movement entry. The Shortcut breaks; typing the numbers in is the
+   * fallback that has to keep working, and it writes through the user's own
+   * session, so it needs an insert and an update policy on health_days.
+   */
+  const manualDate = new Date().toISOString().slice(0, 10);
+  const { error: manualError } = await asUser.from("health_days").upsert(
+    {
+      user_id: uid,
+      log_date: manualDate,
+      steps: 7321,
+      active_kcal: 612,
+      basal_kcal: 1344,
+      exercise_minutes: 55,
+      sleep_minutes: 431,
+      source: "manual",
+    },
+    { onConflict: "user_id,log_date" },
+  );
+  check("a signed-in user can type in their own movement", !manualError, manualError?.message ?? "ok");
+
+  const { data: manualRow } = await asUser
+    .from("health_days")
+    .select("steps, active_kcal, basal_kcal, exercise_minutes, sleep_minutes, source")
+    .eq("user_id", uid)
+    .eq("log_date", manualDate)
+    .maybeSingle();
+  check(
+    "manual steps and energy land intact",
+    manualRow?.steps === 7321 && manualRow?.active_kcal === 612 && manualRow?.basal_kcal === 1344,
+    JSON.stringify(manualRow),
+  );
+
+  const { error: correctError } = await asUser.from("health_days").upsert(
+    { user_id: uid, log_date: manualDate, steps: 9004, active_kcal: 640, basal_kcal: 1344, source: "manual" },
+    { onConflict: "user_id,log_date" },
+  );
+  const { data: corrected } = await asUser
+    .from("health_days")
+    .select("steps, active_kcal")
+    .eq("user_id", uid)
+    .eq("log_date", manualDate)
+    .maybeSingle();
+  check(
+    "a correction overwrites rather than duplicating",
+    !correctError && corrected?.steps === 9004 && corrected?.active_kcal === 640,
+    correctError?.message ?? JSON.stringify(corrected),
+  );
+
+  const { error: foreignHealth } = await asUser.from("health_days").upsert({
+    user_id: "00000000-0000-0000-0000-000000000000",
+    log_date: manualDate,
+    steps: 1,
+  });
+  check("but not somebody else's movement", !!foreignHealth, foreignHealth?.message ?? "IT SUCCEEDED");
+
   for (const path of ["/today", "/lift", "/food", "/progress", "/settings"]) {
     const res = await fetch(`${base}${path}`, { headers: { cookie }, redirect: "manual" });
     const body = res.status === 200 ? await res.text() : "";

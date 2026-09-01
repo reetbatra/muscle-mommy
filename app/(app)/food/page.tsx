@@ -68,7 +68,12 @@ export default async function FoodPage({
 
       <div className="space-y-4">
         <WeekCard balance={week} />
-        <EnergyCard balance={balance} macros={macros} calorieTarget={ctx.goals.calorie_target} />
+        <EnergyCard
+          balance={balance}
+          macros={macros}
+          calorieTarget={ctx.goals.calorie_target}
+          burnHref={viewed === ctx.today ? "/today" : `/today?d=${viewed}`}
+        />
         <MealLogger meals={data.meals} photoUrls={photoUrls} today={viewed} />
       </div>
     </Screen>

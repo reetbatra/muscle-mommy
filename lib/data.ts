@@ -179,6 +179,12 @@ export type TodayData = {
   habitHistory: Record<string, Set<string>>;
   meals: Meal[];
   health: HealthDay | null;
+  /**
+   * The most recent resting energy on record at or before this day. Resting
+   * energy barely moves week to week, so it prefills the manual entry sheet
+   * and the number only has to be typed once.
+   */
+  lastRestingKcal: number | null;
   cycle: CycleDay | null;
   periodFlow: { log_date: string; flow: string }[];
   openSession: WorkoutSession | null;
@@ -189,7 +195,8 @@ export type TodayData = {
 export async function getTodayData(today: string, historyStart: string): Promise<TodayData> {
   const { supabase, user } = await requireUser();
 
-  const [habits, logs, meals, health, cycleToday, flow, sessions, bodyComp] = await Promise.all([
+  const [habits, logs, meals, health, lastResting, cycleToday, flow, sessions, bodyComp] =
+    await Promise.all([
     supabase
       .from("habits")
       .select("*")
@@ -209,6 +216,15 @@ export async function getTodayData(today: string, historyStart: string): Promise
       .eq("log_date", today)
       .order("logged_at"),
     supabase.from("health_days").select("*").eq("user_id", user.id).eq("log_date", today).maybeSingle(),
+    supabase
+      .from("health_days")
+      .select("basal_kcal")
+      .eq("user_id", user.id)
+      .not("basal_kcal", "is", null)
+      .lte("log_date", today)
+      .order("log_date", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
     supabase.from("cycle_days").select("*").eq("user_id", user.id).eq("log_date", today).maybeSingle(),
     supabase
       .from("cycle_days")
@@ -232,7 +248,7 @@ export async function getTodayData(today: string, historyStart: string): Promise
       .maybeSingle(),
   ]);
 
-  const firstError = [habits, logs, meals, health, cycleToday, flow, sessions, bodyComp].find(
+  const firstError = [habits, logs, meals, health, lastResting, cycleToday, flow, sessions, bodyComp].find(
     (r) => r.error,
   )?.error;
   if (firstError) throw new Error(`Could not load today: ${firstError.message}`);
@@ -258,6 +274,7 @@ export async function getTodayData(today: string, historyStart: string): Promise
     habitHistory,
     meals: (meals.data ?? []) as Meal[],
     health: (health.data ?? null) as HealthDay | null,
+    lastRestingKcal: lastResting.data?.basal_kcal ?? null,
     cycle: (cycleToday.data ?? null) as CycleDay | null,
     periodFlow: (flow.data ?? []) as { log_date: string; flow: string }[],
     openSession: allSessions.find((s) => !s.finished_at) ?? null,
@@ -306,10 +323,12 @@ export const getWeekDays = cache(async (todayISO: string) => {
     const h = healthByDate.get(date);
     const basal = h?.basal_kcal ?? null;
     const active = h?.active_kcal ?? null;
+    // Null hands the day back to weeklyBalance, which stands the maintenance
+    // estimate in. Active energy alone is never a burn total: see dayBurn.
     return {
       date,
       consumed: consumedByDate.get(date) ?? null,
-      burned: basal !== null || active !== null ? (basal ?? 0) + (active ?? 0) || null : null,
+      burned: basal !== null && basal > 0 ? basal + (active ?? 0) : null,
     };
   });
 });

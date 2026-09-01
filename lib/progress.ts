@@ -8,6 +8,7 @@ import {
   workingWeight,
   type LoggedSet,
 } from "@/lib/domain/overload";
+import { dayBurn } from "@/lib/domain/macros";
 import type { BodyComp } from "@/lib/domain/types";
 
 export type DayPoint = {
@@ -117,8 +118,12 @@ export async function getProgressData(
     const consumed = kcalByDate.get(date) ?? null;
     const basal = h?.basal_kcal ?? null;
     const active = h?.active_kcal ?? null;
+    // Active energy only stacks on measured resting energy; on the estimate
+    // path maintenance already covers ordinary movement. See dayBurn.
     const burned =
-      basal !== null || active !== null ? (basal ?? maintenanceKcal) + (active ?? 0) : null;
+      basal !== null || active !== null
+        ? dayBurn({ maintenanceKcal, basalKcal: basal, activeKcal: active }).total
+        : null;
     return {
       date,
       steps: h?.steps ?? null,

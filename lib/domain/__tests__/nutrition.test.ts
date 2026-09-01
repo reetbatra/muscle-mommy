@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  dayBurn,
   energyBalance,
   macroLines,
   suggestCalorieTarget,
@@ -56,19 +57,19 @@ describe("energyBalance", () => {
     expect(energyBalance({ ...base, consumed: 0 }).verdict).toBe("pending");
   });
 
-  it("counts Apple Health active energy toward the burn", () => {
+  it("holds at the maintenance estimate until resting energy is known", () => {
     const result = energyBalance({ ...base, consumed: 1500 });
-    expect(result.burned).toBe(2200);
+    expect(result.burned).toBe(1900);
     expect(result.verdict).toBe("deficit");
-    expect(result.headline).toBe("700 kcal deficit");
+    expect(result.headline).toBe("400 kcal deficit");
   });
 
   it("calls a near-even day maintenance instead of a win", () => {
-    expect(energyBalance({ ...base, consumed: 2150 }).verdict).toBe("maintenance");
+    expect(energyBalance({ ...base, consumed: 1850 }).verdict).toBe("maintenance");
   });
 
   it("says surplus plainly", () => {
-    const result = energyBalance({ ...base, consumed: 2700 });
+    const result = energyBalance({ ...base, consumed: 2400 });
     expect(result.verdict).toBe("surplus");
     expect(result.headline).toBe("500 kcal surplus");
   });
@@ -221,7 +222,10 @@ describe("energyBalance with Apple Health resting energy", () => {
     expect(result.headline).toBe("300 kcal deficit");
   });
 
-  it("falls back to the estimate when Health sent nothing", () => {
+  it("never stacks active energy on the maintenance estimate", () => {
+    // Maintenance is a whole-day figure that already assumes ordinary walking
+    // about. Adding Apple Health active energy on top counted the same
+    // movement twice and invented roughly 400 kcal of deficit a day.
     const result = energyBalance({
       consumed: 1500,
       maintenanceKcal: 1900,
@@ -230,7 +234,54 @@ describe("energyBalance with Apple Health resting energy", () => {
       calorieTarget: 1600,
     });
     expect(result.burnSource).toBe("estimate");
-    expect(result.burned).toBe(2280);
+    expect(result.burned).toBe(1900);
+    expect(result.activeIgnored).toBe(true);
+  });
+
+  it("counts active energy the moment resting energy is typed in", () => {
+    const withoutResting = energyBalance({
+      consumed: 1500,
+      maintenanceKcal: 1900,
+      basalKcal: null,
+      activeKcal: 600,
+      calorieTarget: 1600,
+    });
+    const withResting = energyBalance({
+      consumed: 1500,
+      maintenanceKcal: 1900,
+      basalKcal: 1380,
+      activeKcal: 600,
+      calorieTarget: 1600,
+    });
+    expect(withoutResting.burned).toBe(1900);
+    expect(withResting.burned).toBe(1980);
+    expect(withResting.activeIgnored).toBe(false);
+  });
+});
+
+describe("dayBurn", () => {
+  it("splits a measured burn into resting and active", () => {
+    expect(dayBurn({ maintenanceKcal: 1900, basalKcal: 1340, activeKcal: 640 })).toEqual({
+      total: 1980,
+      source: "health",
+      resting: 1340,
+      active: 640,
+      activeIgnored: false,
+    });
+  });
+
+  it("treats a zero or missing resting figure as unknown, not as zero burn", () => {
+    expect(dayBurn({ maintenanceKcal: 1900, basalKcal: 0, activeKcal: 500 }).total).toBe(1900);
+    expect(dayBurn({ maintenanceKcal: 1900, basalKcal: null, activeKcal: null })).toMatchObject({
+      total: 1900,
+      source: "estimate",
+      activeIgnored: false,
+    });
+  });
+
+  it("ignores a negative or absent active figure without breaking the total", () => {
+    expect(dayBurn({ maintenanceKcal: 1900, basalKcal: 1400, activeKcal: null }).total).toBe(1400);
+    expect(dayBurn({ maintenanceKcal: 1900, basalKcal: 1400, activeKcal: -50 }).total).toBe(1400);
   });
 });
 

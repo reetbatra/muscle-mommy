@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Flame, TrendingDown, TrendingUp, Minus } from "lucide-react";
 import { Sparkle } from "@/components/ui/sparkle";
 import { ProgressRing } from "@/components/ui/progress-ring";
@@ -16,10 +17,13 @@ export function EnergyCard({
   balance,
   macros,
   calorieTarget,
+  burnHref,
 }: {
   balance: EnergyBalance;
   macros: MacroLine[];
   calorieTarget: number;
+  /** Where to go to fix the burn figure, when it is not on this screen. */
+  burnHref?: string;
 }) {
   const style = VERDICT_STYLE[balance.verdict];
   const Icon = style.icon;
@@ -62,13 +66,26 @@ export function EnergyCard({
             {balance.verdict === "deficit" ? <Sparkle size={13} twinkle /> : null}
           </p>
           <p className="mt-1 text-sm leading-relaxed text-ink-soft">{balance.detail}</p>
-          {balance.verdict !== "pending" ? (
-            <p className="mt-2 text-[11px] text-ink-faint">
-              {balance.burnSource === "health"
-                ? "Burn measured by Apple Health."
-                : "Burn estimated from your body stats. Connect Apple Health for the real number."}
-            </p>
-          ) : null}
+          <p className="tnum mt-2 text-[11px] text-ink-faint">
+            {balance.burnSource === "health" ? (
+              <>
+                Burned {Math.round(balance.burned)} — {Math.round(balance.restingKcal)} resting +{" "}
+                {Math.round(balance.activeKcal)} active.
+              </>
+            ) : (
+              <>
+                Burn estimated at {Math.round(balance.burned)}.{" "}
+                {balance.activeIgnored
+                  ? "Add resting energy from Health so your active calories can count."
+                  : "Add today's energy from Health for the measured number."}{" "}
+                {burnHref ? (
+                  <Link href={burnHref} className="text-[var(--accent)] underline">
+                    Add it
+                  </Link>
+                ) : null}
+              </>
+            )}
+          </p>
         </div>
       </div>
 

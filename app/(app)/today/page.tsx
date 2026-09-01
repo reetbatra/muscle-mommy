@@ -9,7 +9,8 @@ import { todayState } from "@/lib/domain/schedule";
 import { Screen } from "@/components/screen";
 import { HabitGrid } from "@/components/today/habit-grid";
 import { EnergyCard } from "@/components/today/energy-card";
-import { NextWorkoutCard, StepsCard } from "@/components/today/movement-card";
+import { MovementCard } from "@/components/today/movement-card";
+import { NextWorkoutCard } from "@/components/today/next-workout-card";
 import { CycleChip } from "@/components/today/cycle-chip";
 import { PagesRead } from "@/components/today/pages-read";
 import { WeekCard } from "@/components/today/week-card";
@@ -140,11 +141,17 @@ export default async function TodayPage({
           calorieTarget={ctx.goals.calorie_target}
         />
 
-        <StepsCard
+        <MovementCard
+          date={viewed}
           steps={data.health?.steps ?? null}
           target={ctx.goals.step_target}
           sleepMinutes={data.health?.sleep_minutes ?? null}
           activeKcal={data.health?.active_kcal ?? null}
+          basalKcal={data.health?.basal_kcal ?? null}
+          exerciseMinutes={data.health?.exercise_minutes ?? null}
+          lastRestingKcal={data.lastRestingKcal}
+          maintenanceKcal={ctx.goals.maintenance_kcal}
+          consumedKcal={totals.kcal}
         />
 
         <PagesRead

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
@@ -212,7 +213,12 @@ function ReceivedPanel({ last }: { last: LastReceived }) {
   if (!last) {
     return (
       <p className="border border-line p-3 text-[14px] leading-relaxed text-ink-soft">
-        Nothing received yet. Run the shortcut once by hand and this fills in.
+        Nothing received yet. Run the shortcut once by hand and this fills in. While it is not
+        working, tap the pencil on the Movement card on{" "}
+        <Link href="/today" className="text-[var(--accent)] underline">
+          Today
+        </Link>{" "}
+        and type the numbers straight off the Health app.
       </p>
     );
   }
