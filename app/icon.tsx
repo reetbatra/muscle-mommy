@@ -6,9 +6,12 @@ export const contentType = "image/png";
 /**
  * The browser tab icon. Paper ground, bronze dumbbell, one sparkle.
  *
+ * Baby pink ground, deeper rose mark, 4.8:1. A near-white icon vanishes on a
+ * home screen full of colour, and vanishes again in a light browser tab, which
+ * is what the hairline edge is for.
+ *
  * It has to stay on the diagonal: two blocks joined by a bar, sitting level,
- * reads as a capital H at this size. A hairline edge keeps a light icon from
- * dissolving into a light browser tab.
+ * reads as a capital H at this size.
  */
 export default function Icon() {
   return new ImageResponse(
@@ -21,8 +24,8 @@ export default function Icon() {
           alignItems: "center",
           justifyContent: "center",
           borderRadius: 7,
-          background: "#fdf6f7",
-          border: "1px solid #f0d5de",
+          background: "#f9dce6",
+          border: "1px solid #edc4d4",
           position: "relative",
         }}
       >
@@ -31,7 +34,7 @@ export default function Icon() {
           height={25}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#b0466e"
+          stroke="#a8395f"
           strokeWidth={3.2}
           strokeLinecap="round"
           strokeLinejoin="round"

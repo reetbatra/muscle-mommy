@@ -14,7 +14,7 @@ export default function AppleIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#fdf6f7",
+          background: "#f9dce6",
           position: "relative",
         }}
       >
@@ -23,7 +23,7 @@ export default function AppleIcon() {
           height={104}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#b0466e"
+          stroke="#a8395f"
           strokeWidth={2.3}
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -39,7 +39,7 @@ export default function AppleIcon() {
           width={30}
           height={30}
           viewBox="0 0 24 24"
-          fill="#b0466e"
+          fill="#a8395f"
           style={{ position: "absolute", top: 26, right: 26 }}
         >
           <path d="M12 0c.9 5.7 5.4 10.2 11.1 11.1C17.4 12 12.9 16.5 12 22.2 11.1 16.5 6.6 12 .9 11.1 6.6 10.2 11.1 5.7 12 0Z" />
